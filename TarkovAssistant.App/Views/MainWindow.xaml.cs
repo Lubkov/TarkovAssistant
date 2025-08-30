@@ -18,7 +18,7 @@ namespace TarkovAssistant.App
     {
         public MainWindow()
         {
-            InitializeComponent();
-        }
+            InitializeComponent();            
+        }        
     }
 }
