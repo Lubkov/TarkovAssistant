@@ -15,7 +15,7 @@ namespace TarkovAssistant.App
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            base.OnStartup(e);
+            base.OnStartup(e);            
 
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -28,10 +28,12 @@ namespace TarkovAssistant.App
 
             services.AddTransient<IMapService, MapService>();
             services.AddTransient<ILayerService, LayerService>();
+            services.AddTransient<IQuestService, QuestService>();
+            services.AddTransient<IFileMonitor, FileMonitor>();
             services.AddTransient<MainWindowViewModel>();
 
             Services = services.BuildServiceProvider();
-
+                        
             var mainWindow = new MainWindow
             {
                 DataContext = Services.GetRequiredService<MainWindowViewModel>()

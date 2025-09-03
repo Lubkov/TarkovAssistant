@@ -61,6 +61,24 @@ namespace TarkovAssistant.App.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на TarkovAssistant .
+        /// </summary>
+        public static string AppName_Label {
+            get {
+                return ResourceManager.GetString("AppName_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Co-Op Extraction.
+        /// </summary>
+        public static string CoopExtraction_Name {
+            get {
+                return ResourceManager.GetString("CoopExtraction_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Extractions.
         /// </summary>
         public static string Extractions_Label {
@@ -70,11 +88,20 @@ namespace TarkovAssistant.App.Localization {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на TarkovAssistant .
+        ///   Ищет локализованную строку, похожую на PMC Extraction.
         /// </summary>
-        public static string Label_AppName {
+        public static string PMCExtraction_Name {
             get {
-                return ResourceManager.GetString("Label_AppName", resourceCulture);
+                return ResourceManager.GetString("PMCExtraction_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Quest.
+        /// </summary>
+        public static string Quest_Name {
+            get {
+                return ResourceManager.GetString("Quest_Name", resourceCulture);
             }
         }
         
@@ -84,6 +111,24 @@ namespace TarkovAssistant.App.Localization {
         public static string Quests_Label {
             get {
                 return ResourceManager.GetString("Quests_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Scav Extraction.
+        /// </summary>
+        public static string ScavExtraction_Name {
+            get {
+                return ResourceManager.GetString("ScavExtraction_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Transit.
+        /// </summary>
+        public static string TransitExtraction_Name {
+            get {
+                return ResourceManager.GetString("TransitExtraction_Name", resourceCulture);
             }
         }
     }

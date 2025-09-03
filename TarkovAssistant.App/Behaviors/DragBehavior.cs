@@ -33,8 +33,8 @@ namespace TarkovAssistant.App.Behaviors
             {
                 _isDragging = true;
                 _startMouse = e.GetPosition(AssociatedObject.Parent as UIElement);
-                _startX = vm.ContainerLeft;
-                _startY = vm.ContainerTop;
+                _startX = vm.InteractiveMap.ContainerLeft;
+                _startY = vm.InteractiveMap.ContainerTop;
                 AssociatedObject.CaptureMouse();
             }
         }
@@ -44,8 +44,8 @@ namespace TarkovAssistant.App.Behaviors
             if (_isDragging && AssociatedObject.DataContext is MainWindowViewModel vm && AssociatedObject.Parent is UIElement canvas)
             {
                 var pos = e.GetPosition(canvas);
-                vm.ContainerLeft = _startX + (pos.X - _startMouse.X);
-                vm.ContainerTop = _startY + (pos.Y - _startMouse.Y);
+                vm.InteractiveMap.ContainerLeft = _startX + (pos.X - _startMouse.X);
+                vm.InteractiveMap.ContainerTop = _startY + (pos.Y - _startMouse.Y);
             }
         }
 

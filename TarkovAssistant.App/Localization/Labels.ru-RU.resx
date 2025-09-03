@@ -117,13 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CoopExtraction_Name" xml:space="preserve">
+    <value>Совм. выход</value>
+  </data>
   <data name="Extractions_Label" xml:space="preserve">
     <value>Выходы с карты</value>
   </data>
-  <data name="Label_AppName" xml:space="preserve">
+  <data name="AppName_Label" xml:space="preserve">
     <value>TarkovAssistant</value>
+  </data>
+  <data name="PMCExtraction_Name" xml:space="preserve">
+    <value>Выход ЧВК</value>
   </data>
   <data name="Quests_Label" xml:space="preserve">
     <value>Квесты</value>
+  </data>
+  <data name="ScavExtraction_Name" xml:space="preserve">
+    <value>Выход дикого</value>
+  </data>
+  <data name="TransitExtraction_Name" xml:space="preserve">
+    <value>Переход</value>
+  </data>
+  <data name="Quest_Name" xml:space="preserve">
+    <value>Квест</value>
   </data>
 </root>

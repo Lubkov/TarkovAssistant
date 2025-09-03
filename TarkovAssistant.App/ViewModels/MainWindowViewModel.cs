@@ -6,36 +6,26 @@ using TarkovAssistant.Services;
 
 namespace TarkovAssistant.App.ViewModels
 {
-    public partial class MainWindowViewModel : ObservableObject
+    public partial class MainWindowViewModel : ObservableObject, IDisposable
     {
         private readonly IMapService _mapService;
+        private readonly IFileMonitor _fileMonitor;
 
         private readonly FormWrapper _storedForm;
-
-        public MapModel? CurrentMap { get; private set; }
 
         #region <Properties>
 
         [ObservableProperty]
-        private FormModel _formInfo;               
+        private FormModel _formInfo;
+
+        [ObservableProperty]
+        private InteractiveMapModel _interactiveMap;                
                         
         [ObservableProperty]
         private bool _isFilterPanelVisible;
 
         [ObservableProperty]
         private bool _isMapSelectionPanelVisible;
-
-        [ObservableProperty]
-        private double _containerLeft;
-
-        [ObservableProperty]
-        private double _containerTop;
-
-        [ObservableProperty]
-        private double _containerWidth;
-
-        [ObservableProperty]
-        private double _containerHeight;
 
         [ObservableProperty]
         private MapModel? _selectedMap = null;
@@ -48,37 +38,29 @@ namespace TarkovAssistant.App.ViewModels
         }
 
         [ObservableProperty]
-        private LayerModel? _currentLayer = null;
-
-        [ObservableProperty]
-        private double _mapWidth;
-
-        [ObservableProperty]
-        private double _mapHeight;
-
-        [ObservableProperty]
         private ObservableCollection<MapModel> _maps = new();
 
         [ObservableProperty]
-        private ObservableCollection<MarkerModel> _markers = new();
+        private bool _isTestMode = false;
 
-        [ObservableProperty]
-        private ObservableCollection<MarkerGroupModel> _quests = new();
-
-        [ObservableProperty]
-        private ObservableCollection<MarkerGroupModel> _extractions = new();
-    
         #endregion
 
-        public MainWindowViewModel(IMapService mapService)
+        public MainWindowViewModel(IMapService mapService, IFileMonitor fileMonitor)
         {
             _mapService = mapService;
+            _fileMonitor = fileMonitor;
             _formInfo = new FormModel();
             _storedForm = new FormWrapper(_formInfo);
+            _interactiveMap = new InteractiveMapModel(mapService, fileMonitor);
+#if DEBUG
+            _isTestMode = true;
+#else
+            _isTestMode = false;
+#endif
         }
 
         #region <Commands>   
-        
+
         [RelayCommand]
         private async Task SelectMap()
         {
@@ -87,62 +69,107 @@ namespace TarkovAssistant.App.ViewModels
                 await LoadMaps();
             }
 
-            SelectedMap = null;
-            IsMapSelectionPanelVisible = true;
+            if (IsMapSelectionPanelVisible)
+            {
+                IsMapSelectionPanelVisible = false;
+            }
+            else
+            {
+                SelectedMap = null;
+                IsMapSelectionPanelVisible = true;
+            }                
         }
 
         private async Task OpenSelectedMap(MapModel map)
         {
             IsMapSelectionPanelVisible = false;
-            if (CurrentMap == map)
-            {
-                return;
-            }
-            CurrentMap = map;
-         
-            await LoadLayers(CurrentMap);
-            CurrentLayer = CurrentMap.MainLayer;
-            MapWidth = CurrentLayer?.Picture?.Width ?? 0;
-            MapHeight = CurrentLayer?.Picture?.Height ?? 0;
+
+            await InteractiveMap.Open(map);
+            CenterMap();
         }
 
         [RelayCommand]
         private void ToggleFullScreen()
         {
+            HideAllPanels();
             _storedForm.IsFullScreen = !_storedForm.IsFullScreen;          
         }
 
         [RelayCommand]
         private void ZoomIn()
         {
-            MapWidth += MapWidth * 0.2;
-            MapHeight += MapHeight * 0.2;
+            HideAllPanels();
+            InteractiveMap.ZoomIn();
         }
 
         [RelayCommand]
         private void ZoomOut()
         {
-            MapWidth -= MapWidth * 0.2;
-            MapHeight -= MapHeight * 0.2;
+            HideAllPanels();
+            InteractiveMap.ZoomOut();
         }
 
         [RelayCommand]
         private void CenterMap()
         {
-            ContainerLeft = (ContainerWidth - MapWidth) / 2;
-            ContainerTop = (ContainerHeight - MapHeight) / 2;
+            HideAllPanels();
+            InteractiveMap.CenterMap(FormInfo);          
         }
 
         [RelayCommand]
         private void ToggleMapFilters()
         {
+            IsMapSelectionPanelVisible = false;
             IsFilterPanelVisible = !IsFilterPanelVisible;
         }
 
         [RelayCommand]
         private void OpenSettings()
         {
+            HideAllPanels();
+        }
 
+        [RelayCommand]
+        private void HideAllPanels()
+        {
+            IsMapSelectionPanelVisible = false;
+            IsFilterPanelVisible = false;
+        }
+
+#if DEBUG
+        string[] _filenames =
+        {
+            @"2025-09-08[09-51]_-10.97, 1.40, -133.66_0.06718, -0.05115, 0.00348, 0.99642_15.00 (0).png",
+            @"2025-09-07[15-31]_16.37, 1.29, -28.89_-0.00665, -0.99336, 0.07853, -0.08384_18.71 (0).png",
+            @"2025-09-07[18-08]_415.53, 2.80, -71.77_0.00379, 0.08995, -0.00034, 0.99594_13.02 (0).png", // на новую заправку
+            @"2025-09-07[18-08]_415.11, 2.80, -71.96_0.00297, 0.99312, 0.02581, -0.11414_13.04 (0).png", // в обратную сторону
+            @"2025-09-07[18-08]_415.44, 2.80, -72.07_-0.01869, 0.73077, 0.02003, 0.68208_13.03 (0).png" // на ангар со снайпером
+        };
+        int _fileindex = -1;
+#endif
+
+        [RelayCommand]
+        private void TestCurrentPosition()
+        {
+#if DEBUG             
+            _fileindex++;
+            if (_fileindex >= _filenames.Length)
+            { 
+                _fileindex = 0;
+            }
+
+            PositionModel? position = PositionModel.Parse(_filenames[_fileindex]);
+            if (position != null)
+            {
+                InteractiveMap.CurrentPosition = position;
+                InteractiveMap.CurrentPosition.IsVisibile = true;
+                InteractiveMap.NormalizePosition(InteractiveMap.CurrentPosition);
+            }
+            else
+            {
+                InteractiveMap.CurrentPosition.IsVisibile = false;
+            }
+#endif
         }
 
         #endregion
@@ -155,42 +182,13 @@ namespace TarkovAssistant.App.ViewModels
             foreach (var entity in maps)
                 Maps.Add(new MapModel(entity));
         }
-
-        private async Task LoadLayers(MapModel map)
+     
+        void IDisposable.Dispose()
         {
-            var layers = await _mapService.GetLayersForMapAsync(map.Id);
-            map.SetLayers(layers);
+            if (_fileMonitor is IDisposable monitor)
+            {
+                monitor.Dispose();
+            }
         }
-
-        //private async Task OpenMap()
-        //{
-        //    CurrentMap = Maps.FirstOrDefault();
-        //    if (CurrentMap != null)
-        //    {
-        //        MapWidth = Math.Abs(CurrentMap.Left) + Math.Abs(CurrentMap.Right);
-        //        MapHeight = Math.Abs(CurrentMap.Right) + Math.Abs(CurrentMap.Bottom);
-
-        //        await LoadLayers(CurrentMap);
-
-        //        CurrentLayer = CurrentMap.MainLayer;
-        //    }
-
-
-        //    //CurrentMap = TestDataService.GenerateMap();
-        //    //MapWidth = Math.Abs(CurrentMap.Left) + Math.Abs(CurrentMap.Right);
-        //    //MapHeight = Math.Abs(CurrentMap.Right) + Math.Abs(CurrentMap.Bottom);
-
-        //    //Quests = TestDataService.GenerateQuestRepository();
-        //    //Extractions = TestDataService.GenerateExtractionRepository();
-        //    //Markers.Clear();
-
-        //    //foreach (var group in Extractions)
-        //    //{
-        //    //    foreach(var item in group.Markers)
-        //    //    {
-        //    //        Markers.Add(item);
-        //    //    }                
-        //    //}
-        //}
     }
 }

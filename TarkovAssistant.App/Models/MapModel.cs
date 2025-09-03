@@ -1,5 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows.Media.Imaging;
+﻿using System.Windows.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
 using TarkovAssistant.Domain;
 
 namespace TarkovAssistant.App.Models
@@ -17,7 +17,19 @@ namespace TarkovAssistant.App.Models
         public List<LayerModel> Layers { get; private set; } = new();
 
         public LayerModel? MainLayer { get; private set; }
-        
+
+        public List<MarkerModel> Markers { get; private set; } = new();
+
+        public List<QuestModel> Quests { get; private set; } = new();
+
+        public List<MarkerModel> this[MarkerKind kind] 
+        {
+            get 
+            { 
+                return Markers.Where(marker => marker.Kind == kind).ToList();
+            }
+        }
+
         public MapModel() 
         {
             Name = "";
@@ -32,9 +44,9 @@ namespace TarkovAssistant.App.Models
             Top = map.Top;
             Right = map.Right;
             Bottom = map.Bottom;
-            Picture = ImageHelper.GetPicture(map.Picture);
+            Picture = ImageHelper.GetPicture(map.Picture);           
 
-            SetLayers(map.Layers);
+            SetLayers(map.Layers);            
         }
 
         public void SetLayers(List<GameLayer> layers)
@@ -49,6 +61,28 @@ namespace TarkovAssistant.App.Models
 
             Layers.AddRange(layers.Select(gl => new LayerModel(gl)));
             MainLayer = Layers.FirstOrDefault(layer => layer.IsMainLayer);
+        }
+
+        public void SetMarkers(List<GameMarker> source)
+        {
+            Markers.Clear();
+            if (source == null || source.Count == 0)
+            { 
+                return; 
+            }                       
+
+            Markers.AddRange(source.Select(marker => new MarkerModel(marker)));
+        }
+
+        public void SetQuests(List<GameQuest> source)
+        {
+            Quests.Clear();
+            if (source == null || source.Count == 0)
+            {
+                return;
+            }
+
+            Quests.AddRange(source.Select(quest => new QuestModel(quest)));
         }
     }
 }

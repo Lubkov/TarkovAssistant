@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Resources\Images\map_coop_extract.png" />
     <None Remove="Resources\Images\map_pmc_extract.png" />
+    <None Remove="Resources\Images\map_quest.png" />
     <None Remove="Resources\Images\map_scav_extract.png" />
     <None Remove="Resources\Images\map_transit_extract.png" />
   </ItemGroup>
@@ -35,6 +36,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\map_coop_extract.png" />
     <Resource Include="Resources\Images\map_pmc_extract.png" />
+    <Resource Include="Resources\Images\map_quest.png" />
     <Resource Include="Resources\Images\map_scav_extract.png" />
     <Resource Include="Resources\Images\map_transit_extract.png" />
   </ItemGroup>

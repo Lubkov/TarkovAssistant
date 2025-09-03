@@ -27,7 +27,7 @@ namespace TarkovAssistant.App.Models
         {
             Left = 50;
             Top = 50;
-            Width = 920;
+            Width = 1020;
             Height = 740;
             WindowStyle = WindowStyle.SingleBorderWindow;
             ResizeMode = ResizeMode.CanResize;

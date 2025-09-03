@@ -25,6 +25,8 @@ namespace TarkovAssistant.Domain
 
         public List<GameLayer> Layers { get; set; } = new();
 
+        public List<GameMarker> Markers { get; set; } = new();
+
         public GameMap()
         { 
         
