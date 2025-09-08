@@ -16,7 +16,7 @@ namespace TarkovAssistant.App.Models
 
         public BitmapImage? Picture { get; set; }
 
-        public LayerModel(GameLayer layer)
+        public LayerModel(LayerEntity layer)
         { 
             Id = layer.Id;
             Level = layer.Level;

@@ -14,7 +14,7 @@ namespace TarkovAssistant.Services
             _db = db;
         }
 
-        public async Task<List<GameQuest>> GetQuestsAsync()
+        public async Task<List<QuestEntity>> GetQuestsAsync()
         {
             return await _db.Quests.ToListAsync();
         }

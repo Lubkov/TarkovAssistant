@@ -1,23 +1,34 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush x:Key="DarkBaseBrush" Color="#33302A" />
-    <Color x:Key="BaseColor">#33302A</Color>
+    <SolidColorBrush x:Key="UltraDarkBaseBrush" Color="#060606" />
+    <Color x:Key="UltraBaseColor">#060606</Color>
 
-    <SolidColorBrush x:Key="MediumBaseBrush" Color="#413d34" />
-    <Color x:Key="MediumBaseColor">#413d34</Color>
+    <SolidColorBrush x:Key="DarkBaseBrush" Color="#2b2d30" />
+    <Color x:Key="BaseColor">#2b2d30</Color>
 
-    <SolidColorBrush x:Key="LightBaseBrush" Color="#545149" />
-    <Color x:Key="LightBaseColor">#545149</Color>
+    <SolidColorBrush x:Key="MediumBaseBrush" Color="#393b40" />
+    <Color x:Key="MediumBaseColor">#393b40</Color>
+
+    <SolidColorBrush x:Key="LightBaseBrush" Color="#4e5157" />
+    <Color x:Key="LightBaseColor">#4e5157</Color>
 
     <SolidColorBrush x:Key="UltraLightBaseBrush" Color="#67645d" />
     <Color x:Key="UltraLightBaseColor">#67645d</Color>
 
     <SolidColorBrush x:Key="LightBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="MediumBrush" Color="#d9d9d9" />
-
-    <SolidColorBrush x:Key="MapBaseBrush" Color="#060606" />
-    <SolidColorBrush x:Key="ScrollBarBrush" Color="#0F0F0F" />
+    <SolidColorBrush x:Key="DarkBrush" Color="#777777" />
 
     <SolidColorBrush x:Key="FilterFocusedBrush" Color="#aba08f" />
     <SolidColorBrush x:Key="FilterSelectedBrush" Color="#22bb22" />
+
+    <SolidColorBrush x:Key="DarkFocudedBrush" Color="#2e436e" />
+    <Color x:Key="DarkFocudedColor">#2e436e</Color>
+
+    <SolidColorBrush x:Key="BaseFocudedBrush" Color="#3574f0" />
+    <Color x:Key="BaseFocudedColor">#3574f0</Color>
+
+    <SolidColorBrush x:Key="MediumFocudedBrush" Color="#1883d7" />
+    <Color x:Key="MediumFocudedColor">#1883d7</Color>
+
 </ResourceDictionary>

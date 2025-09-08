@@ -6,16 +6,33 @@ namespace TarkovAssistant.Services
 {
     public class MarkerService : IMarkerService
     {
-        private readonly ApplicationDbContext _db;
+        private readonly ApplicationDbContext _dbContext;
 
-        public MarkerService(ApplicationDbContext db)
+        public MarkerService(ApplicationDbContext dbContext)
         {
-            _db = db;
+            _dbContext = dbContext;
         }
 
-        public async Task<List<GameMarker>> GetMarkersAsync()
+        public async Task<List<MarkerEntity>> GetMarkersAsync()
         { 
-            return await _db.Marker.ToListAsync();
+            return await _dbContext.Markers.ToListAsync();
+        }
+
+        public async Task<MarkerEntity?> GetMarkerById(int id, int? profileId)
+        {
+            var query = _dbContext.Markers
+                .AsNoTracking()
+                .Include(m => m.Quest)
+                .Include(m => m.Resources)
+                .Where(m => m.Id == id);
+
+            if (profileId != null)
+            {
+                query = query.Include(marker => marker.MarkerStates
+                    .Where(state => state.ProfileId == profileId));
+            }
+
+            return await query.FirstOrDefaultAsync();
         }
     }
 }

@@ -141,4 +141,7 @@
   <data name="Quest_Name" xml:space="preserve">
     <value>Квест</value>
   </data>
+  <data name="Completed_Label" xml:space="preserve">
+    <value>Завершен</value>
+  </data>
 </root>

@@ -1,14 +1,23 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+﻿using System.Windows;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using TarkovAssistant.App.Messages;
 using TarkovAssistant.App.Models;
+using TarkovAssistant.App.Views;
+using TarkovAssistant.Domain;
 using TarkovAssistant.Services;
 
 namespace TarkovAssistant.App.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject, IDisposable
     {
+        private IAppService _appService;
         private readonly IMapService _mapService;
+        private readonly IMarkerService _markerService;
+        private readonly IProfileService _profileService;
+        private readonly IMarkerStateService _markerStateService;
         private readonly IFileMonitor _fileMonitor;
 
         private readonly FormWrapper _storedForm;
@@ -19,13 +28,22 @@ namespace TarkovAssistant.App.ViewModels
         private FormModel _formInfo;
 
         [ObservableProperty]
-        private InteractiveMapModel _interactiveMap;                
-                        
+        private InteractiveMapModel _interactiveMap;
+
+        [ObservableProperty]
+        private OptionsModel _options;
+
         [ObservableProperty]
         private bool _isFilterPanelVisible;
 
         [ObservableProperty]
         private bool _isMapSelectionPanelVisible;
+
+        [ObservableProperty]
+        private bool _isMarkerInfoPanelVisible;
+
+        [ObservableProperty]
+        private bool _isSettingsPanelVisible;
 
         [ObservableProperty]
         private MapModel? _selectedMap = null;
@@ -45,21 +63,35 @@ namespace TarkovAssistant.App.ViewModels
 
         #endregion
 
-        public MainWindowViewModel(IMapService mapService, IFileMonitor fileMonitor)
+        public MainWindowViewModel(
+            IAppService appService, 
+            IMapService mapService, 
+            IMarkerService markerService, 
+            IProfileService profileService,
+            IMarkerStateService markerStateService,
+            IFileMonitor fileMonitor)
         {
+            _appService = appService;
             _mapService = mapService;
+            _markerService = markerService;
+            _profileService = profileService;
+            _markerStateService = markerStateService;
             _fileMonitor = fileMonitor;
             _formInfo = new FormModel();
             _storedForm = new FormWrapper(_formInfo);
-            _interactiveMap = new InteractiveMapModel(mapService, fileMonitor);
+            _interactiveMap = new InteractiveMapModel(appService, mapService, markerService, markerStateService, fileMonitor);
+            _options = new OptionsModel(appService, profileService);
+            _options.OptionsChanged += OnOptionsChanged;
 #if DEBUG
             _isTestMode = true;
 #else
             _isTestMode = false;
 #endif
+
+            MarkerResourceModel.DataPath = appService.Options.DataPath;
         }
 
-        #region <Commands>   
+        #region <Commands>
 
         [RelayCommand]
         private async Task SelectMap()
@@ -69,6 +101,7 @@ namespace TarkovAssistant.App.ViewModels
                 await LoadMaps();
             }
 
+            IsMarkerInfoPanelVisible = false;
             if (IsMapSelectionPanelVisible)
             {
                 IsMapSelectionPanelVisible = false;
@@ -77,7 +110,7 @@ namespace TarkovAssistant.App.ViewModels
             {
                 SelectedMap = null;
                 IsMapSelectionPanelVisible = true;
-            }                
+            }
         }
 
         private async Task OpenSelectedMap(MapModel map)
@@ -92,7 +125,7 @@ namespace TarkovAssistant.App.ViewModels
         private void ToggleFullScreen()
         {
             HideAllPanels();
-            _storedForm.IsFullScreen = !_storedForm.IsFullScreen;          
+            _storedForm.IsFullScreen = !_storedForm.IsFullScreen;
         }
 
         [RelayCommand]
@@ -113,13 +146,14 @@ namespace TarkovAssistant.App.ViewModels
         private void CenterMap()
         {
             HideAllPanels();
-            InteractiveMap.CenterMap(FormInfo);          
+            InteractiveMap.CenterMap(FormInfo);
         }
 
         [RelayCommand]
         private void ToggleMapFilters()
         {
             IsMapSelectionPanelVisible = false;
+            IsMarkerInfoPanelVisible = false;
             IsFilterPanelVisible = !IsFilterPanelVisible;
         }
 
@@ -127,6 +161,30 @@ namespace TarkovAssistant.App.ViewModels
         private void OpenSettings()
         {
             HideAllPanels();
+            IsSettingsPanelVisible = !IsSettingsPanelVisible;
+        }
+
+        [RelayCommand]
+        private async Task MarkerClick(MarkerModel marker)
+        {
+            HideAllPanels();
+            IsMarkerInfoPanelVisible = await InteractiveMap.OpenMarker(marker.Id);
+            InteractiveMap.CurrentMarker!.FinishedChanged += (value) =>
+            {
+                marker.IsFinished = value;                
+            };
+        }
+
+        [RelayCommand]
+        private void HideMarkerPanel()
+        {
+            IsMarkerInfoPanelVisible = false;
+        }
+
+        [RelayCommand]
+        private void HideSettingsPanel()
+        {
+            IsSettingsPanelVisible = false;
         }
 
         [RelayCommand]
@@ -134,6 +192,134 @@ namespace TarkovAssistant.App.ViewModels
         {
             IsMapSelectionPanelVisible = false;
             IsFilterPanelVisible = false;
+            IsMarkerInfoPanelVisible = false;
+            IsSettingsPanelVisible = false;
+        }
+
+        [RelayCommand]
+        private async Task AddProfile()
+        {
+            var profile = new ProfileEntity();
+            profile.Name = "New Profile";
+            profile.Kind = ProfileKind.Bear;
+
+            var dialog = new ProfileWindow
+            {
+                DataContext = new ProfileWindowViewModel(profile)
+            };
+            dialog.Owner = Application.Current.MainWindow;
+            WeakReferenceMessenger.Default.Register<CloseDialogMessage>(dialog, (r, m) =>
+            {
+                dialog.DialogResult = m.Result;
+            });
+            try
+            {
+                if (dialog.ShowDialog() ?? false)
+                {
+                    await _profileService.AddProfileAsync(profile);
+                    var item = new ProfileModel(profile);
+                    Options.Profiles.Add(item);
+                    Options.CurrentProfile = item;
+
+                    _appService.Options.Profile = item.Id;
+                    await _appService.SaveOptionsAsync();
+                }
+            }
+            finally
+            {
+                WeakReferenceMessenger.Default.UnregisterAll(dialog);
+            }
+        }
+
+        [RelayCommand]
+        private async Task EditProfile(ProfileModel profile)
+        {
+            if (profile == null)
+                return;
+
+            var newProfile = new ProfileEntity();
+            newProfile.Id = profile.Id;
+            newProfile.Name = profile.Name;
+            newProfile.Kind = profile.Kind;
+
+            var dialog = new ProfileWindow
+            {
+                DataContext = new ProfileWindowViewModel(newProfile)
+            };
+            dialog.Owner = Application.Current.MainWindow;
+            WeakReferenceMessenger.Default.Register<CloseDialogMessage>(dialog, (r, m) =>
+            {
+                dialog.DialogResult = m.Result;
+            });
+            try
+            {
+                if (dialog.ShowDialog() ?? false)
+                {
+                    await _profileService.UpdateProfileAsync(newProfile);
+
+                    profile.Name = newProfile.Name;
+                    profile.Kind = newProfile.Kind;
+                }
+            }
+            finally
+            {
+                WeakReferenceMessenger.Default.UnregisterAll(dialog);
+            }
+        }
+
+        [RelayCommand]
+        private async Task RemoveProfile(ProfileModel profile)
+        {
+            if (profile == null)
+                return;
+
+            var dialog = new MessageWindow
+            {
+                DataContext = new MessageWindowViewModel("Delete", $"Delete profile \"{profile.Name}\"?")
+            };
+            dialog.Owner = Application.Current.MainWindow;
+            dialog.ShowInTaskbar = false;
+            WeakReferenceMessenger.Default.Register<CloseDialogMessage>(dialog, (r, m) =>
+            {
+                dialog.DialogResult = m.Result;
+            });
+            try
+            {
+                if (dialog.ShowDialog() ?? false)
+                {
+                    await _profileService.DeleteProfileAsync(profile.Id);
+                    _appService.Options.Profile = null;
+                    await _appService.SaveOptionsAsync();
+                    
+                    Options.Profiles.Remove(profile);
+                    Options.CurrentProfile = null;
+                }
+            }
+            finally
+            {
+                WeakReferenceMessenger.Default.UnregisterAll(dialog);
+            }
+        }
+
+        [RelayCommand]
+        private void ClearProfile(ProfileModel profile)
+        {
+            Options.CurrentProfile = null;
+        }
+
+        [RelayCommand]
+        private void OpenScreenshotPath()
+        {
+            Microsoft.Win32.OpenFolderDialog dialog = new();
+            dialog.Multiselect = false;
+            dialog.Title = "Select a folder for screenshots";
+            dialog.InitialDirectory = Options.SreenshotPath;
+            
+            bool? result = dialog.ShowDialog();
+            if (result == true)
+            {
+                Options.SreenshotPath = dialog.FolderName;
+            }
         }
 
 #if DEBUG
@@ -183,6 +369,12 @@ namespace TarkovAssistant.App.ViewModels
                 Maps.Add(new MapModel(entity));
         }
      
+        private void OnOptionsChanged(object? sender, EventArgs e)
+        {
+            Options.AppllyTo(_appService.Options);
+            _ = _appService.SaveOptionsAsync();
+        }
+
         void IDisposable.Dispose()
         {
             if (_fileMonitor is IDisposable monitor)

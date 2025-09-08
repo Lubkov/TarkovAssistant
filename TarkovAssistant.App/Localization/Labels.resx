@@ -141,4 +141,7 @@
   <data name="Quest_Name" xml:space="preserve">
     <value>Quest</value>
   </data>
+  <data name="Completed_Label" xml:space="preserve">
+    <value>Completed</value>
+  </data>
 </root>

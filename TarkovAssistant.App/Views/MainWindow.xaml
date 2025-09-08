@@ -16,7 +16,7 @@
     Height="{Binding FormInfo.Height, Mode=TwoWay}"
     MinWidth="800"
     MinHeight="600"
-    Background="{StaticResource MapBaseBrush}"
+    Background="{StaticResource UltraDarkBaseBrush}"
     Cursor=""
     Left="{Binding FormInfo.Left, Mode=TwoWay}"
     ResizeMode="{Binding FormInfo.ResizeMode, Mode=TwoWay}"
@@ -30,7 +30,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisible" />
     </Window.Resources>
 
-    <Grid Background="#0f0f0f" Cursor="">
+    <Grid Background="{StaticResource UltraDarkBaseBrush}" Cursor="">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition />
@@ -71,7 +71,7 @@
                 <Button
                     Command="{Binding SelectMapCommand}"
                     Cursor="Hand"
-                    Style="{StaticResource IconButtonStyle}">
+                    Style="{StaticResource BigIconButtonStyle}">
                     <icons:PackIconMaterial
                         Width="40"
                         Height="40"
@@ -81,7 +81,8 @@
                 <Button
                     Margin="0,20,0,0"
                     Command="{Binding ToggleFullScreenCommand}"
-                    Style="{StaticResource IconButtonStyle}">
+                    Cursor="Hand"
+                    Style="{StaticResource BigIconButtonStyle}">
                     <icons:PackIconMaterial
                         Width="40"
                         Height="40"
@@ -91,7 +92,8 @@
                 <Button
                     Margin="0,10,0,0"
                     Command="{Binding ZoomInCommand}"
-                    Style="{StaticResource IconButtonStyle}">
+                    Cursor="Hand"
+                    Style="{StaticResource BigIconButtonStyle}">
                     <icons:PackIconMaterial
                         Width="40"
                         Height="40"
@@ -101,7 +103,8 @@
                 <Button
                     Margin="0,10,0,0"
                     Command="{Binding ZoomOutCommand}"
-                    Style="{StaticResource IconButtonStyle}">
+                    Cursor="Hand"
+                    Style="{StaticResource BigIconButtonStyle}">
                     <icons:PackIconMaterial
                         Width="40"
                         Height="40"
@@ -112,7 +115,7 @@
                     Margin="0,10,0,0"
                     Command="{Binding CenterMapCommand}"
                     Cursor="Hand"
-                    Style="{StaticResource IconButtonStyle}">
+                    Style="{StaticResource BigIconButtonStyle}">
                     <icons:PackIconMaterial
                         Width="40"
                         Height="40"
@@ -123,7 +126,7 @@
                     Margin="0,10,0,0"
                     Command="{Binding ToggleMapFiltersCommand}"
                     Cursor="Hand"
-                    Style="{StaticResource IconButtonStyle}">
+                    Style="{StaticResource BigIconButtonStyle}">
                     <icons:PackIconMaterial
                         Width="40"
                         Height="40"
@@ -134,7 +137,7 @@
                     Margin="0,10,0,0"
                     Command="{Binding TestCurrentPositionCommand}"
                     Cursor="Hand"
-                    Style="{StaticResource IconButtonStyle}"
+                    Style="{StaticResource BigIconButtonStyle}"
                     Visibility="{Binding IsTestMode, Converter={StaticResource BoolToVisible}}">
                     <icons:PackIconMaterial
                         Width="40"
@@ -150,7 +153,7 @@
                 VerticalAlignment="Bottom"
                 Command="{Binding OpenSettingsCommand}"
                 Cursor="Hand"
-                Style="{StaticResource IconButtonStyle}">
+                Style="{StaticResource BigIconButtonStyle}">
                 <icons:PackIconMaterial
                     Width="40"
                     Height="40"
@@ -168,6 +171,12 @@
             Grid.ColumnSpan="2"
             Panel.ZIndex="0"
             Cursor="">
+
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDown">
+                    <i:InvokeCommandAction Command="{Binding HideAllPanelsCommand}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
 
             <Canvas
                 Canvas.Left="{Binding InteractiveMap.ContainerLeft}"
@@ -237,16 +246,6 @@
                             </Style>
                         </ItemsControl.ItemContainerStyle>
 
-                        <!--
-                         <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Style="{StaticResource MarkerButtonStyle}" Visibility="{Binding Visibility, Mode=TwoWay}" >
-                                    <icons:PackIconMaterial Kind="HelpCircle" Width="24" Height="24"/>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        -->
-
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Image
@@ -254,16 +253,22 @@
                                     Height="32"
                                     Cursor="Hand"
                                     Source="{Binding Picture}"
-                                    Visibility="{Binding IsVisibile, Converter={StaticResource BoolToVisible}}" />
+                                    Visibility="{Binding IsVisibile, Converter={StaticResource BoolToVisible}}">
+
+                                    <i:Interaction.Behaviors>
+                                        <b:ClickBehavior Command="{Binding DataContext.MarkerClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
+                                    </i:Interaction.Behaviors>
+                                </Image>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
 
                     </ItemsControl>
                 </Canvas>
             </Canvas>
+
+
         </Canvas>
         <!--#endregion-->
-
 
         <!--#region <Map Selection Panel> -->
 
@@ -282,16 +287,16 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Panel.ZIndex="2"
-            Background="{StaticResource MediumBaseBrush}"
-            BorderBrush="{StaticResource LightBaseBrush}"
+            d:Visibility="Collapsed"
+            Background="{StaticResource DarkBaseBrush}"
+            BorderBrush="{StaticResource MediumFocudedBrush}"
             BorderThickness="1"
-            CornerRadius="6"
             Cursor=""
             Visibility="{Binding IsMapSelectionPanelVisible, Converter={StaticResource BoolToVisible}}">
 
             <ListBox
                 x:Name="MapListBox"
-                Background="{StaticResource MediumBaseBrush}"
+                Background="Transparent"
                 BorderThickness="0"
                 ItemsSource="{Binding Maps}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -313,6 +318,397 @@
 
         <!--#endregion-->
 
+        <!--#region <Marker info Panel> -->
+
+        <Border
+            Name="MarkerPanel"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="2"
+            Width="580"
+            Height="Auto"
+            Margin="20"
+            Padding="5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Panel.ZIndex="5"
+            d:Visibility="Collapsed"
+            Background="{StaticResource DarkBaseBrush}"
+            BorderBrush="{StaticResource MediumFocudedBrush}"
+            BorderThickness="1"
+            CornerRadius="6"
+            Cursor=""
+            Visibility="{Binding IsMarkerInfoPanelVisible, Converter={StaticResource BoolToVisible}}">
+
+            <Grid Width="Auto" Height="Auto">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="64" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Image
+                        Grid.Column="0"
+                        Width="64"
+                        d:Source="/Resources/Images/Traders/trader_prapor.png"
+                        Source="{Binding InteractiveMap.CurrentMarker.TraderPicture}" />
+
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="10,5,10,5"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        d:Text="Marker description"
+                        FontFamily="{StaticResource BaseFont}"
+                        FontSize="{StaticResource Big}"
+                        Foreground="{StaticResource LightBrush}"
+                        Text="{Binding InteractiveMap.CurrentMarker.Description}" />
+
+                    <Grid Grid.Column="2">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Button
+                                Grid.Row="0"
+                                Width="36"
+                                Height="36"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Command="{Binding HideMarkerPanelCommand}"
+                                Cursor="Hand"
+                                Style="{StaticResource SimpleIconButtonStyle}">
+                                <icons:PackIconMaterial
+                                    Width="24"
+                                    Height="24"
+                                    Kind="CloseBoxOutline" />
+                            </Button>
+
+                            <CheckBox
+                                Grid.Row="1"
+                                Margin="0,0,5,0"
+                                VerticalAlignment="Bottom"
+                                Content="{x:Static lang:Labels.Completed_Label}"
+                                FontFamily="{StaticResource BaseFont}"
+                                FontSize="{StaticResource Regular}"
+                                Foreground="{StaticResource LightBrush}"
+                                IsChecked="{Binding InteractiveMap.CurrentMarker.IsFinished, Mode=TwoWay}" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+                <TextBlock
+                    Grid.Row="1"
+                    MinHeight="40"
+                    Margin="10,5,10,5"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    FontFamily="{StaticResource BaseFont}"
+                    FontSize="{StaticResource Regular}"
+                    Foreground="{StaticResource LightBrush}"
+                    Text="{Binding InteractiveMap.CurrentMarker.CurrentScreenshot.Description}"
+                    TextWrapping="Wrap" />
+
+                <ListBox
+                    Grid.Row="2"
+                    Height="52"
+                    Background="{StaticResource DarkBaseBrush}"
+                    BorderThickness="0"
+                    ItemContainerStyle="{StaticResource MarkerHorizontalItemStyle}"
+                    ItemsSource="{Binding InteractiveMap.CurrentMarker.Items}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                    Visibility="{Binding InteractiveMap.CurrentMarker.IsHorizontalItemListVisible}">
+
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Image
+                        Grid.Column="0"
+                        Height="Auto"
+                        MinWidth="640"
+                        MinHeight="360"
+                        Margin="2"
+                        Source="{Binding InteractiveMap.CurrentMarker.CurrentScreenshot.Picture}" />
+
+                    <ListBox
+                        Grid.Column="1"
+                        Width="52"
+                        Background="{StaticResource DarkBaseBrush}"
+                        BorderThickness="0"
+                        ItemContainerStyle="{StaticResource MarkerVerticalItemStyle}"
+                        ItemsSource="{Binding InteractiveMap.CurrentMarker.Items}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        Visibility="{Binding InteractiveMap.CurrentMarker.IsVerticalItemListVisible}">
+
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid VerticalAlignment="Top" Columns="1" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                </Grid>
+
+                <ListBox
+                    Grid.Row="4"
+                    Height="52"
+                    Background="{StaticResource DarkBaseBrush}"
+                    BorderThickness="0"
+                    ItemsSource="{Binding InteractiveMap.CurrentMarker.Screenshots}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                    SelectedItem="{Binding InteractiveMap.CurrentMarker.CurrentScreenshot, Mode=TwoWay}"
+                    Visibility="{Binding InteractiveMap.CurrentMarker.IsScreenshotListVisible}">
+
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid HorizontalAlignment="Left" Rows="1" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Template" Value="{StaticResource ScreenshotListItems}" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+        </Border>
+
+        <!--#endregion-->
+
+        <!--#region <Settings Panel> -->
+
+        <Border
+            Name="SettingsPanel"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="2"
+            Width="520"
+            Height="Auto"
+            Padding="5"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Panel.ZIndex="5"
+            d:Visibility="Visible"
+            Background="{StaticResource DarkBaseBrush}"
+            BorderBrush="{StaticResource MediumFocudedBrush}"
+            BorderThickness="1"
+            Cursor=""
+            Visibility="{Binding IsSettingsPanelVisible, Converter={StaticResource BoolToVisible}}">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Margin="5"
+                    FontFamily="{StaticResource BaseFont}"
+                    FontSize="{StaticResource Big}"
+                    Foreground="{StaticResource LightBrush}"
+                    Text="Settings" />
+
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Width="36"
+                    Height="36"
+                    VerticalAlignment="Center"
+                    Command="{Binding HideSettingsPanelCommand}"
+                    Cursor="Hand"
+                    Style="{StaticResource SimpleIconButtonStyle}">
+                    <icons:PackIconMaterial
+                        Width="24"
+                        Height="24"
+                        Kind="CloseBoxOutline" />
+                </Button>
+
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="20,10,20,0"
+                    FontFamily="{StaticResource BaseFont}"
+                    FontSize="{StaticResource Regular}"
+                    Foreground="{StaticResource LightBrush}"
+                    Text="Путь к системным данным программы:" />
+
+                <TextBox
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="20,5,10,0"
+                    Padding="2,3,2,3"
+                    IsEnabled="False"
+                    Style="{StaticResource BaseTextBox}"
+                    Text="{Binding Options.DataPath, Mode=TwoWay}" />
+
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Margin="20,20,20,0"
+                    FontFamily="{StaticResource BaseFont}"
+                    FontSize="{StaticResource Regular}"
+                    Foreground="{StaticResource LightBrush}"
+                    Text="Путь к скриншотам игры:" />
+
+                <TextBox
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Margin="20,5,10,0"
+                    Padding="2,3,2,3"
+                    Style="{StaticResource BaseTextBox}"
+                    Text="{Binding Options.SreenshotPath, Mode=TwoWay}" />
+
+                <Button
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Width="Auto"
+                    Height="Auto"
+                    Margin="0,5,10,0"
+                    VerticalAlignment="Center"
+                    Command="{Binding OpenScreenshotPathCommand}"
+                    Cursor="Hand"
+                    Style="{StaticResource SimpleIconButtonStyle}">
+                    <icons:PackIconMaterial
+                        Width="28"
+                        Height="28"
+                        Kind="FolderOpenOutline" />
+                </Button>
+
+                <CheckBox
+                    Grid.Row="5"
+                    Grid.Column="0"
+                    Margin="20,20,20,0"
+                    Content="Отслеживать местоположении"
+                    FontFamily="{StaticResource BaseFont}"
+                    FontSize="{StaticResource Regular}"
+                    Foreground="{StaticResource LightBrush}"
+                    IsChecked="{Binding Options.TrackLocation, Mode=TwoWay}" />
+
+                <TextBlock
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    Margin="20,20,20,0"
+                    FontFamily="{StaticResource BaseFont}"
+                    FontSize="{StaticResource Regular}"
+                    Foreground="{StaticResource LightBrush}"
+                    Text="Игровой профиль:" />
+
+                <Grid
+                    Grid.Row="7"
+                    Grid.ColumnSpan="2"
+                    Margin="0,0,0,10">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <ComboBox
+                        Grid.Column="0"
+                        Margin="20,0,10,0"
+                        Padding="0,2,0,2"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource BaseFont}"
+                        FontSize="{StaticResource Regular}"
+                        Foreground="{StaticResource LightBrush}"
+                        ItemsSource="{Binding Options.Profiles, Mode=TwoWay}"
+                        SelectedItem="{Binding Options.CurrentProfile, Mode=TwoWay}">
+
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+
+                    </ComboBox>
+
+                    <!--  Command="{Binding SelectMapCommand}"  -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button
+                            Command="{Binding AddProfileCommand}"
+                            Cursor="Hand"
+                            Style="{StaticResource SimpleIconButtonStyle}">
+                            <icons:PackIconMaterial
+                                Width="32"
+                                Height="32"
+                                Kind="FileDocumentPlusOutline" />
+                        </Button>
+
+                        <Button
+                            Margin="5,0,0,0"
+                            Command="{Binding EditProfileCommand}"
+                            CommandParameter="{Binding Options.CurrentProfile}"
+                            Cursor="Hand"
+                            Style="{StaticResource SimpleIconButtonStyle}">
+                            <icons:PackIconMaterial
+                                Width="32"
+                                Height="32"
+                                Kind="FileDocumentEditOutline" />
+                        </Button>
+
+                        <Button
+                            Margin="5,0,0,0"
+                            Command="{Binding RemoveProfileCommand}"
+                            CommandParameter="{Binding Options.CurrentProfile}"
+                            Cursor="Hand"
+                            Style="{StaticResource SimpleIconButtonStyle}">
+                            <icons:PackIconMaterial
+                                Width="32"
+                                Height="32"
+                                Kind="FileDocumentRemoveOutline" />
+                        </Button>
+
+                        <Button
+                            Margin="5,0,5,0"
+                            Command="{Binding ClearProfileCommand}"
+                            Cursor="Hand"
+                            Style="{StaticResource SimpleIconButtonStyle}">
+                            <icons:PackIconMaterial
+                                Width="32"
+                                Height="32"
+                                Kind="TrashCanOutline" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+        <!--#endregion-->
+
         <!--#region <Filter Panel> -->
 
         <Border
@@ -323,7 +719,7 @@
             HorizontalAlignment="Center"
             Panel.ZIndex="2"
             Background="{StaticResource DarkBaseBrush}"
-            BorderBrush="{StaticResource LightBaseBrush}"
+            BorderBrush="{StaticResource MediumFocudedBrush}"
             BorderThickness="1"
             CornerRadius="6"
             Cursor=""
@@ -439,7 +835,7 @@
                     VerticalAlignment="Top"
                     Command="{Binding ToggleMapFiltersCommand}"
                     Cursor="Hand"
-                    Style="{StaticResource IconButtonStyle}">
+                    Style="{StaticResource SimpleIconButtonStyle}">
                     <icons:PackIconMaterial
                         Width="24"
                         Height="24"
@@ -455,10 +851,8 @@
             <i:DataTrigger Binding="{Binding IsFilterPanelVisible}" Value="False">
                 <i:GoToStateAction StateName="Closed" />
             </i:DataTrigger>
-            <i:EventTrigger EventName="MouseDown">
-                <i:InvokeCommandAction Command="{Binding HideAllPanelsCommand}" />
-            </i:EventTrigger>
         </i:Interaction.Triggers>
+
 
         <!--#endregion-->
 

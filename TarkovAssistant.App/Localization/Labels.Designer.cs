@@ -70,6 +70,15 @@ namespace TarkovAssistant.App.Localization {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Completed.
+        /// </summary>
+        public static string Completed_Label {
+            get {
+                return ResourceManager.GetString("Completed_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Co-Op Extraction.
         /// </summary>
         public static string CoopExtraction_Name {

@@ -1,6 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Globalization;
-using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace TarkovAssistant.App.Models
 {
@@ -21,6 +20,13 @@ namespace TarkovAssistant.App.Models
 
         [ObservableProperty]
         private bool _isVisibile = false;
+
+        partial void OnIsVisibileChanged(bool value)
+        {
+            DoStateChanged();
+        }
+
+        public event EventHandler? StateChanged;
 
         public PositionModel(double top, double left, double angle)
         {
@@ -87,6 +93,11 @@ namespace TarkovAssistant.App.Models
             {
                 return null;
             }            
+        }
+
+        protected void DoStateChanged()
+        {
+            StateChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

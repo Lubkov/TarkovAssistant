@@ -4,6 +4,7 @@ namespace TarkovAssistant.Services
 {
     public interface IMarkerService
     {
-        Task<List<GameMarker>> GetMarkersAsync();
+        Task<List<MarkerEntity>> GetMarkersAsync();
+        Task<MarkerEntity?> GetMarkerById(int id, int? profileId);
     }
 }

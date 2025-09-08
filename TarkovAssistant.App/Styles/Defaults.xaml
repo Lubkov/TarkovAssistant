@@ -6,7 +6,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
                     <Canvas Height="18">
-                        <Polygon Fill="{StaticResource ScrollBarBrush}" Points="3,15 15,15 9,3" />
+                        <Polygon Fill="{StaticResource UltraDarkBaseBrush}" Points="3,15 15,15 9,3" />
                     </Canvas>
                 </ControlTemplate>
             </Setter.Value>
@@ -19,7 +19,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
                     <Canvas Height="18">
-                        <Polygon Fill="{StaticResource ScrollBarBrush}" Points="3,3 9,15 15,3" />
+                        <Polygon Fill="{StaticResource UltraDarkBaseBrush}" Points="3,3 9,15 15,3" />
                     </Canvas>
                 </ControlTemplate>
             </Setter.Value>
@@ -47,7 +47,7 @@
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Border
                         Margin="2"
-                        Background="{StaticResource ScrollBarBrush}"
+                        Background="{StaticResource UltraDarkBaseBrush}"
                         CornerRadius="5" />
                 </ControlTemplate>
             </Setter.Value>
@@ -91,6 +91,55 @@
 
     <Style TargetType="{x:Type ScrollBar}">
         <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
+    </Style>
+
+    <Style TargetType="CheckBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal">
+                        <Border
+                            x:Name="border"
+                            Width="22"
+                            Height="22"
+                            Margin="0,0,5,0"
+                            BorderBrush="Transparent"
+                            BorderThickness="2"
+                            CornerRadius="3">
+                            <Border
+                                x:Name="innerBorder"
+                                Background="{StaticResource MediumBaseBrush}"
+                                BorderBrush="{StaticResource LightBaseBrush}"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <Path
+                                    x:Name="button"
+                                    Data="M 3 8 L 7 12 L 13 4"
+                                    Stroke="{StaticResource LightBrush}"
+                                    StrokeThickness="2"
+                                    Visibility="Collapsed" />
+                            </Border>
+                        </Border>
+                        <ContentPresenter VerticalAlignment="Center" />
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="innerBorder" Property="BorderBrush" Value="{StaticResource BaseFocudedBrush}" />
+                        </Trigger>
+
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="innerBorder" Property="Background" Value="{StaticResource BaseFocudedBrush}" />
+                            <Setter TargetName="button" Property="Visibility" Value="Visible" />
+                        </Trigger>
+
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource BaseFocudedBrush}" />
+                            <Setter TargetName="innerBorder" Property="BorderBrush" Value="{StaticResource LightBaseBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>
