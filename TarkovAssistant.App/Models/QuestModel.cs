@@ -7,10 +7,10 @@ namespace TarkovAssistant.App.Models
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public GameTrader Trader { get; set; }
+        public TraderKind Trader { get; set; }
         public List<MarkerModel> Markers { get; set; } = new();
 
-        public QuestModel(GameQuest quest)
+        public QuestModel(QuestEntity quest)
         { 
             Id = quest.Id;
             Name = quest.Name;

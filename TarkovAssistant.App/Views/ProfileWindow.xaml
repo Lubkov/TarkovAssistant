@@ -1,0 +1,108 @@
+﻿<Window
+    x:Class="TarkovAssistant.App.Views.ProfileWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:TarkovAssistant.App.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Редактирование профиля пользователя"
+    Width="420"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterOwner"
+    WindowStyle="ToolWindow"
+    mc:Ignorable="d">
+    <Border
+        Background="{StaticResource DarkBaseBrush}"
+        BorderBrush="{StaticResource MediumFocudedBrush}"
+        BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                Margin="20,20,20,0"
+                Cursor=""
+                Style="{StaticResource BaseText}"
+                Text="Имя пользователя:" />
+
+            <TextBox
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="20,5,10,0"
+                Style="{StaticResource BaseTextBox}"
+                Text="{Binding ProfileName, Mode=TwoWay}" />
+
+            <TextBlock
+                Grid.Row="2"
+                Margin="20,20,20,0"
+                Style="{StaticResource BaseText}"
+                Text="Фракция пользователя:" />
+
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <RadioButton
+                        Width="Auto"
+                        Margin="40,10,10,0"
+                        Content="Bear"
+                        Cursor="Hand"
+                        FontFamily="{StaticResource BaseFont}"
+                        FontSize="{StaticResource Regular}"
+                        Foreground="{StaticResource LightBrush}"
+                        GroupName="ProfileKind"
+                        IsChecked="{Binding IsBear}" />
+
+                    <RadioButton
+                        Width="Auto"
+                        Margin="40,10,10,0"
+                        Content="Usec"
+                        Cursor="Hand"
+                        FontFamily="{StaticResource BaseFont}"
+                        FontSize="{StaticResource Regular}"
+                        Foreground="{StaticResource LightBrush}"
+                        GroupName="ProfileKind"
+                        IsChecked="{Binding IsUsec}" />
+                </StackPanel>
+            </Grid>
+
+            <Grid
+                Grid.Row="4"
+                Height="Auto"
+                Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button
+                        MinWidth="75"
+                        Background="{StaticResource BaseFocudedBrush}"
+                        BorderBrush="{StaticResource BaseFocudedBrush}"
+                        Command="{Binding SaveCommand}"
+                        Content="OK"
+                        IsDefault="True"
+                        Style="{StaticResource SuccessTextButtonStyle}" />
+
+                    <Button
+                        MinWidth="75"
+                        Margin="10,0,0,0"
+                        Command="{Binding CancelCommand}"
+                        Content="Cancel"
+                        IsCancel="True"
+                        Style="{StaticResource BaseTextButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

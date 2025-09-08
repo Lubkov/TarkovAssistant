@@ -1,6 +1,6 @@
 ﻿namespace TarkovAssistant.Domain
 {
-    public enum GameTrader : int
+    public enum TraderKind : int
     {
         None = 0,
         Prapor = 1,

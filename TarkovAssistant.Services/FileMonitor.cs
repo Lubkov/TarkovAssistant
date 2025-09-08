@@ -12,13 +12,16 @@
 
         public void Start(string path, string filter = "*.*")
         {
-            _watcher = new FileSystemWatcher(path, filter)
+            if (Directory.Exists(path))
             {
-                EnableRaisingEvents = false,
-                IncludeSubdirectories = false
-            };
-            _watcher.Created += OnWatcherCreated;
-            _watcher.EnableRaisingEvents = true;
+                _watcher = new FileSystemWatcher(path, filter)
+                {
+                    EnableRaisingEvents = false,
+                    IncludeSubdirectories = false
+                };
+                _watcher.Created += OnWatcherCreated;
+                _watcher.EnableRaisingEvents = true;
+            }            
         }
 
         public void Stop()
@@ -37,7 +40,7 @@
 
         private void OnWatcherCreated(object sender, FileSystemEventArgs e)
         {
-            _fileCreated?.Invoke(this, new FileCreatedEventArgs(e.Name));
+            _fileCreated?.Invoke(this, new FileCreatedEventArgs(e.Name ?? ""));
         }
 
         void IDisposable.Dispose()

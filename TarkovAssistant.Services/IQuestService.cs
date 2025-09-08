@@ -4,6 +4,6 @@ namespace TarkovAssistant.Services
 {
     public interface IQuestService
     {
-        Task<List<GameQuest>> GetQuestsAsync();
+        Task<List<QuestEntity>> GetQuestsAsync();
     }
 }

@@ -1,4 +1,5 @@
-﻿using TarkovAssistant.App.Localization;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using TarkovAssistant.App.Localization;
 using TarkovAssistant.Domain;
 
 namespace TarkovAssistant.App.Models
@@ -11,24 +12,38 @@ namespace TarkovAssistant.App.Models
 
         public MarkerKind Kind { get; set; }
 
-        public string Picture { get; set; }
+        [ObservableProperty]
+        private string _picture;
+                
+        [ObservableProperty]
+        private bool _isFinished = false;
+
+        partial void OnIsFinishedChanged(bool value)
+        {
+            Picture = GetMarkerIcon(Kind, IsFinished);
+            DoStateChanged();
+        }
 
         public int? MapId { get; set; }
 
         public int? QuestId { get; set; }        
 
-        public MarkerModel(GameMarker marker) : base(marker.Top, marker.Left, 0)
+        public MarkerModel(MarkerEntity marker) : base(marker.Top, marker.Left, 0)
         { 
             Id = marker.Id;
             Description = marker.Description;
             Kind = marker.Kind;
             MapId = marker.MapId;
             QuestId = marker.QuestId;
-            Picture = GetMarkerIcon(marker.Kind);
-            IsVisibile = false;            
+
+            var state = marker.MarkerStates.FirstOrDefault();
+            IsVisibile = state?.IsSeleced ?? false;
+            IsFinished = state?.IsFinished ?? false;
+
+            Picture = GetMarkerIcon(marker.Kind, IsFinished);
         }               
 
-        public static string GetMarkerIcon(MarkerKind kind)
+        public static string GetMarkerIcon(MarkerKind kind, bool IsFinished)
         {
             const string path = @"/Resources/Images/";
 
@@ -43,7 +58,7 @@ namespace TarkovAssistant.App.Models
                 case MarkerKind.TransitExtraction:
                     return path + "map_transit_extract.png";
                 case MarkerKind.Quest:
-                    return path + "map_quest.png";
+                    return (IsFinished) ? path + "map_quest_blue.png" : path + "map_quest_green.png";
            }
 
             return string.Empty;
@@ -66,6 +81,6 @@ namespace TarkovAssistant.App.Models
             }
 
             return string.Empty;
-        }        
+        }
     }
 }

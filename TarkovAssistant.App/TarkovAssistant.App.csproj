@@ -6,14 +6,31 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\app_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\Images\map_coop_extract.png" />
     <None Remove="Resources\Images\map_pmc_extract.png" />
     <None Remove="Resources\Images\map_quest.png" />
+    <None Remove="Resources\Images\map_quest_blue.png" />
+    <None Remove="Resources\Images\map_quest_green.png" />
     <None Remove="Resources\Images\map_scav_extract.png" />
     <None Remove="Resources\Images\map_transit_extract.png" />
+    <None Remove="Resources\Images\Traders\trader_fence.png" />
+    <None Remove="Resources\Images\Traders\trader_jaeger.png" />
+    <None Remove="Resources\Images\Traders\trader_lightkeeper.png" />
+    <None Remove="Resources\Images\Traders\trader_mechanic.png" />
+    <None Remove="Resources\Images\Traders\trader_peacemaker.png" />
+    <None Remove="Resources\Images\Traders\trader_ragman.png" />
+    <None Remove="Resources\Images\Traders\trader_skier.png" />
+    <None Remove="Resources\Images\Traders\trader_therapist.png" />
+    <None Remove="Resources\Images\Traders\trader_unknown.png" />
+    <None Remove="Resources\Images\trader_prapor.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\app_icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,9 +53,20 @@
   <ItemGroup>
     <Resource Include="Resources\Images\map_coop_extract.png" />
     <Resource Include="Resources\Images\map_pmc_extract.png" />
-    <Resource Include="Resources\Images\map_quest.png" />
+    <Resource Include="Resources\Images\map_quest_blue.png" />
+    <Resource Include="Resources\Images\map_quest_green.png" />
     <Resource Include="Resources\Images\map_scav_extract.png" />
     <Resource Include="Resources\Images\map_transit_extract.png" />
+    <Resource Include="Resources\Images\Traders\trader_fence.png" />
+    <Resource Include="Resources\Images\Traders\trader_jaeger.png" />
+    <Resource Include="Resources\Images\Traders\trader_lightkeeper.png" />
+    <Resource Include="Resources\Images\Traders\trader_mechanic.png" />
+    <Resource Include="Resources\Images\Traders\trader_peacemaker.png" />
+    <Resource Include="Resources\Images\Traders\trader_prapor.png" />
+    <Resource Include="Resources\Images\Traders\trader_ragman.png" />
+    <Resource Include="Resources\Images\Traders\trader_skier.png" />
+    <Resource Include="Resources\Images\Traders\trader_therapist.png" />
+    <Resource Include="Resources\Images\Traders\trader_unknown.png" />
   </ItemGroup>
 
   <ItemGroup>

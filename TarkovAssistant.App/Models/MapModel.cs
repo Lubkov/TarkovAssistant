@@ -14,13 +14,13 @@ namespace TarkovAssistant.App.Models
         public int Bottom { get; set; }
         public BitmapImage? Picture { get; set; }
 
-        public List<LayerModel> Layers { get; private set; } = new();
+        public List<LayerModel> Layers { get; private set; } = [];
 
         public LayerModel? MainLayer { get; private set; }
 
-        public List<MarkerModel> Markers { get; private set; } = new();
+        public List<MarkerModel> Markers { get; private set; } = [];
 
-        public List<QuestModel> Quests { get; private set; } = new();
+        public List<QuestModel> Quests { get; private set; } = [];
 
         public List<MarkerModel> this[MarkerKind kind] 
         {
@@ -36,7 +36,7 @@ namespace TarkovAssistant.App.Models
             Picture = new BitmapImage();
         }
 
-        public MapModel(GameMap map)
+        public MapModel(MapEntity map)
         { 
             Id = map.Id;
             Name = map.Name;
@@ -49,7 +49,7 @@ namespace TarkovAssistant.App.Models
             SetLayers(map.Layers);            
         }
 
-        public void SetLayers(List<GameLayer> layers)
+        public void SetLayers(List<LayerEntity> layers)
         {
             Layers.Clear();
 
@@ -63,7 +63,7 @@ namespace TarkovAssistant.App.Models
             MainLayer = Layers.FirstOrDefault(layer => layer.IsMainLayer);
         }
 
-        public void SetMarkers(List<GameMarker> source)
+        public void SetMarkers(List<MarkerEntity> source)
         {
             Markers.Clear();
             if (source == null || source.Count == 0)
@@ -74,7 +74,7 @@ namespace TarkovAssistant.App.Models
             Markers.AddRange(source.Select(marker => new MarkerModel(marker)));
         }
 
-        public void SetQuests(List<GameQuest> source)
+        public void SetQuests(List<QuestEntity> source)
         {
             Quests.Clear();
             if (source == null || source.Count == 0)

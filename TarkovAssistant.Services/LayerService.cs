@@ -13,7 +13,7 @@ namespace TarkovAssistant.Services
             _db = db;
         }
 
-        public async Task<List<GameLayer>> GetLayersAsync()
+        public async Task<List<LayerEntity>> GetLayersAsync()
         {
             return await _db.Layers.ToListAsync();
         }

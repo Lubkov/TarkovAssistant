@@ -4,11 +4,13 @@ namespace TarkovAssistant.Services
 {
     public interface IMapService
     {
-        Task<GameMap?> GetMapByIdAsync(int mapId);
-        Task<List<GameMap>> GetMapsAsync();
-        Task<List<GameLayer>> GetLayersForMapAsync(int mapId);
-        Task LoadLayersForMapAsync(GameMap map);
-        Task<List<GameMarker>> GetMarkersForMapAsync(int mapId);
-        Task<List<GameQuest>> GetQuestsForMapAsync(int mapId);
+        Task<MapEntity?> GetMapByIdAsync(int mapId, int? profileId);
+        Task<MapEntity?> GetMapByIdAsync(int mapId);        
+        Task<List<MapEntity>> GetMapsAsync();
+        Task<List<LayerEntity>> GetLayersForMapAsync(int mapId);
+        Task LoadLayersForMapAsync(MapEntity map);
+        Task<List<MarkerEntity>> GetMarkersForMapAsync(int mapId, int? profileId);
+        Task<List<MarkerEntity>> GetMarkersForMapAsync(int mapId);
+        Task<List<QuestEntity>> GetQuestsForMapAsync(int mapId);
     }
 }
