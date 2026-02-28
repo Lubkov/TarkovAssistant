@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -17,7 +16,7 @@ namespace TarkovAssistant.App
         public static string SettingsFileName { get; private set; } = null!;
         public static ServiceProvider? Services { get; private set; }
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected async override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
@@ -36,7 +35,7 @@ namespace TarkovAssistant.App
             //var services = new ServiceCollection();
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(config.GetConnectionString("SqlServerConnection")));                                   
-            
+
             services.AddSingleton<IAppService, AppService>();
             services.AddTransient<IMapService, MapService>();
             services.AddTransient<ILayerService, LayerService>();
@@ -45,15 +44,30 @@ namespace TarkovAssistant.App
             services.AddTransient<IFileMonitor, FileMonitor>();
             services.AddTransient<IProfileService, ProfileService>();
             services.AddTransient<IMarkerStateService, MarkerStateService>();
+            services.AddTransient<IWebApiService, WebApiService>();
             services.AddTransient<MainWindowViewModel>();
 
+            ConfigureServices(services);
             Services = services.BuildServiceProvider();
 
+            var mainViewModel = Services.GetRequiredService<MainWindowViewModel>();
             var mainWindow = new MainWindow
             {
-                DataContext = Services.GetRequiredService<MainWindowViewModel>()
+                DataContext = mainViewModel
             };
             mainWindow.Show();
+            await mainViewModel.InitializeAsync();
+        }
+
+        private void ConfigureServices(IServiceCollection services)
+        {
+            // Typed HttpClient
+            services.AddHttpClient<IWebApiService, WebApiService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7296/");
+            });
+
+            services.AddTransient<MainWindow>();
         }
     }
 }

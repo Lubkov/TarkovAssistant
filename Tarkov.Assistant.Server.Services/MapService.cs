@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Net.Http.Json;
-using TarkovAssistant.Contracts;
+﻿using Microsoft.EntityFrameworkCore;
 using TarkovAssistant.Data;
 using TarkovAssistant.Domain;
 
-
-namespace TarkovAssistant.Services
+namespace TarkovAssistant.Server.Services
 {
     public class MapService : IMapService
     {
@@ -22,7 +17,7 @@ namespace TarkovAssistant.Services
         {
             var query = _dbContext.Maps
                 //.AsNoTracking()
-                .Include(map => map.Layers)                
+                .Include(map => map.Layers)
                 .Include(map => map.Markers)
                 .ThenInclude(marker => marker!.Quest)
                 .Where(map => map.Id == mapId);
@@ -42,8 +37,9 @@ namespace TarkovAssistant.Services
             return await _dbContext.Maps
                 //.AsNoTracking()
                 .Include(map => map.Layers)
+                    .ThenInclude(layer => layer!.Resource)
                 .Include(map => map.Markers)
-                .ThenInclude(marker => marker!.Quest)
+                    .ThenInclude(marker => marker!.Quest)
                 .Where(map => map.Id == mapId).FirstOrDefaultAsync();
         }
 
@@ -54,12 +50,6 @@ namespace TarkovAssistant.Services
                 .Include(map => map.Resource)
                 .ToListAsync();
         }
-
-        //public async Task AddMapAsync(string name)
-        //{
-        //    context.Maps.Add(new GameMap { Name = name });
-        //    await context.SaveChangesAsync();
-        //}
 
         public async Task<List<LayerEntity>> GetLayersForMapAsync(int mapId)
         {
@@ -105,7 +95,7 @@ namespace TarkovAssistant.Services
                 .AsNoTracking()
                 //.Include(q => q.Markers)
                 .Where(q => q.Markers.Any(m => m.MapId == mapId))
-                .ToListAsync();            
+                .ToListAsync();
         }
     }
 }

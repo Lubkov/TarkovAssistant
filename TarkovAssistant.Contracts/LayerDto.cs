@@ -11,6 +11,8 @@ namespace TarkovAssistant.Contracts
         public string? Name { get; set; }
 
         public int? MapId { get; set; }
+        
+        public string Picture { get; set; }
 
         public bool IsMainLayer { get; set; }
 
@@ -20,6 +22,7 @@ namespace TarkovAssistant.Contracts
             Level = source.Level;
             Name = source.Name;
             MapId = source.MapId;
+            Picture = source.Resource?.Hash ?? "";
             IsMainLayer = source.IsMainLayer();
         }
     }

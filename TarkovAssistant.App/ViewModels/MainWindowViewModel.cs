@@ -18,9 +18,11 @@ namespace TarkovAssistant.App.ViewModels
         private readonly IMarkerService _markerService;
         private readonly IProfileService _profileService;
         private readonly IMarkerStateService _markerStateService;
+        private readonly IWebApiService _webApiService;
         private readonly IFileMonitor _fileMonitor;
 
         private readonly FormWrapper _storedForm;
+        private TaskCompletionSource<bool> _loaded = new TaskCompletionSource<bool>();
 
         #region <Properties>
 
@@ -69,6 +71,7 @@ namespace TarkovAssistant.App.ViewModels
             IMarkerService markerService, 
             IProfileService profileService,
             IMarkerStateService markerStateService,
+            IWebApiService webApiService,
             IFileMonitor fileMonitor)
         {
             _appService = appService;
@@ -76,10 +79,11 @@ namespace TarkovAssistant.App.ViewModels
             _markerService = markerService;
             _profileService = profileService;
             _markerStateService = markerStateService;
+            _webApiService = webApiService;
             _fileMonitor = fileMonitor;
             _formInfo = new FormModel();
             _storedForm = new FormWrapper(_formInfo);
-            _interactiveMap = new InteractiveMapModel(appService, mapService, markerService, markerStateService, fileMonitor);
+            _interactiveMap = new InteractiveMapModel(appService, mapService, markerService, markerStateService, webApiService, fileMonitor);
             _options = new OptionsModel(appService, profileService);
             _options.OptionsChanged += OnOptionsChanged;
 #if DEBUG
@@ -91,15 +95,18 @@ namespace TarkovAssistant.App.ViewModels
             MarkerResourceModel.DataPath = appService.Options.DataPath;
         }
 
+        public async Task InitializeAsync()
+        {
+            await LoadMaps();
+            _loaded.SetResult(true);
+        }
+
         #region <Commands>
 
         [RelayCommand]
         private async Task SelectMap()
         {
-            if (Maps.Count == 0)
-            {
-                await LoadMaps();
-            }
+            await _loaded.Task; // wait loading maps
 
             IsMarkerInfoPanelVisible = false;
             if (IsMapSelectionPanelVisible)
@@ -361,8 +368,14 @@ namespace TarkovAssistant.App.ViewModels
         #endregion
 
         private async Task LoadMaps()
-        {            
-            var maps = await _mapService.GetMapsAsync();
+        {
+            //var maps = await _mapService.GetMapsAsync();
+
+            //Maps.Clear();
+            //foreach (var entity in maps)
+            //    Maps.Add(new MapModel(entity));
+
+            var maps = await _webApiService.GetMapsFromWebApiAsync();
 
             Maps.Clear();
             foreach (var entity in maps)

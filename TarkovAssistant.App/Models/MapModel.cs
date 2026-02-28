@@ -1,5 +1,6 @@
-﻿using System.Windows.Media.Imaging;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows.Media.Imaging;
+using TarkovAssistant.Contracts;
 using TarkovAssistant.Domain;
 
 namespace TarkovAssistant.App.Models
@@ -36,7 +37,7 @@ namespace TarkovAssistant.App.Models
             Picture = new BitmapImage();
         }
 
-        public MapModel(MapEntity map)
+        public MapModel(MapFullDto map)
         { 
             Id = map.Id;
             Name = map.Name;
@@ -44,9 +45,16 @@ namespace TarkovAssistant.App.Models
             Top = map.Top;
             Right = map.Right;
             Bottom = map.Bottom;
-            Picture = ImageHelper.GetPicture(map.Picture);           
+            //Picture = ImageHelper.GetPicture(map.Picture);           
 
-            SetLayers(map.Layers);            
+            //SetLayers(map.Layers);            
+        }
+
+        public MapModel(MapSummaryDto map)
+        {
+            Id = map.Id;
+            Name = map.Name;
+            Picture = ImageHelper.GetPicture(map.Picture);            
         }
 
         public void SetLayers(List<LayerEntity> layers)

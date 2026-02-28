@@ -20,6 +20,10 @@
 
         public List<MarkerEntity> Markers { get; set; } = [];
 
+        public ResourceEntity? Resource { get; set; }
+
+        public int? ResourceId { get; set; }
+
         public MapEntity()
         { 
         

@@ -10,10 +10,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TarkovAssistant.Data", "TarkovAssistant.Data\TarkovAssistant.Data.csproj", "{B618E7BC-E641-4F28-96DA-A9CB67BF8107}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TarkovAssistant.Services", "TarkovAssistant.Services\TarkovAssistant.Services.csproj", "{98C15FAF-22B1-4A0F-8FC4-AADA9F8F9303}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1C3079F6-FD11-449D-847A-A9BFC3A3A845} = {1C3079F6-FD11-449D-847A-A9BFC3A3A845}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TarkovAssistant.Server.Api", "TarkovAssistant.Server.Api\TarkovAssistant.Server.Api.csproj", "{E602358F-F19E-461C-B2BD-CFB06F34EB57}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1C3079F6-FD11-449D-847A-A9BFC3A3A845} = {1C3079F6-FD11-449D-847A-A9BFC3A3A845}
+		{23263328-7A0C-41EC-B516-95AE4EF5ACFA} = {23263328-7A0C-41EC-B516-95AE4EF5ACFA}
 		{2767FA95-EE50-4DB1-A7D8-DF9F740401C9} = {2767FA95-EE50-4DB1-A7D8-DF9F740401C9}
 		{98C15FAF-22B1-4A0F-8FC4-AADA9F8F9303} = {98C15FAF-22B1-4A0F-8FC4-AADA9F8F9303}
 		{B618E7BC-E641-4F28-96DA-A9CB67BF8107} = {B618E7BC-E641-4F28-96DA-A9CB67BF8107}
@@ -22,6 +26,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TarkovAssistant.Contracts", "TarkovAssistant.Contracts\TarkovAssistant.Contracts.csproj", "{1C3079F6-FD11-449D-847A-A9BFC3A3A845}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2767FA95-EE50-4DB1-A7D8-DF9F740401C9} = {2767FA95-EE50-4DB1-A7D8-DF9F740401C9}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarkov.Assistant.Server.Services", "Tarkov.Assistant.Server.Services\Tarkov.Assistant.Server.Services.csproj", "{23263328-7A0C-41EC-B516-95AE4EF5ACFA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1C3079F6-FD11-449D-847A-A9BFC3A3A845} = {1C3079F6-FD11-449D-847A-A9BFC3A3A845}
+		{2767FA95-EE50-4DB1-A7D8-DF9F740401C9} = {2767FA95-EE50-4DB1-A7D8-DF9F740401C9}
+		{B618E7BC-E641-4F28-96DA-A9CB67BF8107} = {B618E7BC-E641-4F28-96DA-A9CB67BF8107}
 	EndProjectSection
 EndProject
 Global
@@ -54,6 +65,10 @@ Global
 		{1C3079F6-FD11-449D-847A-A9BFC3A3A845}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C3079F6-FD11-449D-847A-A9BFC3A3A845}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C3079F6-FD11-449D-847A-A9BFC3A3A845}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23263328-7A0C-41EC-B516-95AE4EF5ACFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23263328-7A0C-41EC-B516-95AE4EF5ACFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23263328-7A0C-41EC-B516-95AE4EF5ACFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23263328-7A0C-41EC-B516-95AE4EF5ACFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

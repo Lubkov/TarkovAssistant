@@ -12,9 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Tarkov.Assistant.Server.Services\Tarkov.Assistant.Server.Services.csproj" />
     <ProjectReference Include="..\TarkovAssistant.Contracts\TarkovAssistant.Contracts.csproj" />
     <ProjectReference Include="..\TarkovAssistant.Data\TarkovAssistant.Data.csproj" />
-    <ProjectReference Include="..\TarkovAssistant.Services\TarkovAssistant.Services.csproj" />
   </ItemGroup>
 
 </Project>

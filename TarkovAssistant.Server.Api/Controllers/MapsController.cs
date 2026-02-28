@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TarkovAssistant.Contracts;
-using TarkovAssistant.Services;
+using TarkovAssistant.Server.Services;
 
 namespace TarkovAssistant.Server.Api.Controllers
 {

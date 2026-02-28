@@ -25,6 +25,10 @@ namespace TarkovAssistant.Data.Configurations
                 .HasOne(layer => layer.Map)
                 .WithMany(map => map.Layers)
                 .HasForeignKey(layer => layer.MapId);
+
+            builder
+                .HasOne(layer => layer.Resource)
+                .WithOne(res => res.Layer);
         }
     }
 }

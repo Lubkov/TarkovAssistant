@@ -1,7 +1,6 @@
-﻿using TarkovAssistant.Contracts;
-using TarkovAssistant.Domain;
+﻿using TarkovAssistant.Domain;
 
-namespace TarkovAssistant.Services
+namespace TarkovAssistant.Server.Services
 {
     public interface IMapService
     {

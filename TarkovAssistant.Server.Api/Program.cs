@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TarkovAssistant.Data;
-using TarkovAssistant.Services;
+using TarkovAssistant.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +17,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IMapService, MapService>();
 
 var app = builder.Build();
+
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

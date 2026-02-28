@@ -8,8 +8,14 @@
 
         public string? Description { get; set; }
 
+        public string? Hash { get; set; }
+
         public List<MarkerEntity> Markers { get; set; } = [];
 
         public List<PictureEntity> Pictures { get; set; } = [];
+
+        public MapEntity? Map { get; set; }
+
+        public LayerEntity? Layer { get; set; }
     }
 }

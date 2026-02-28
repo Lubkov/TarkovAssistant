@@ -196,7 +196,13 @@
                     Height="{Binding InteractiveMap.Height, Mode=TwoWay}"
                     Canvas.ZIndex="0"
                     Cursor="ScrollAll"
-                    Source="{Binding InteractiveMap.CurrentLayer.Picture}" />
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    Source="{Binding InteractiveMap.CurrentLayer.Picture}">
+
+                    <Image.CacheMode>
+                        <BitmapCache />
+                    </Image.CacheMode>
+                </Image>
 
                 <Canvas
                     Canvas.Left="{Binding InteractiveMap.CurrentPosition.Left}"

@@ -24,6 +24,10 @@ namespace TarkovAssistant.Data.Configurations
             builder
                 .HasMany(map => map.Markers)
                 .WithOne(marker => marker.Map);
+
+            builder
+                .HasOne(map => map.Resource)
+                .WithOne(res => res.Map);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace TarkovAssistant.App.Models
         private IMapService MapService { get; set; }
         private IMarkerService MarkerService { get; set; }
         private IMarkerStateService MarkerStateService { get; set; }
+        private IWebApiService WebApiService { get; set; }
         private IFileMonitor FileMonitor { get; set; }
 
         #region <Properties>
@@ -73,12 +74,14 @@ namespace TarkovAssistant.App.Models
             IMapService mapService,
             IMarkerService markerService,
             IMarkerStateService markerStateService,
+            IWebApiService webApiService,
             IFileMonitor fileMonitor)
         {
             AppService = appService;
             MapService = mapService;
             MarkerService = markerService;
             MarkerStateService = markerStateService;
+            WebApiService = webApiService;
             FileMonitor = fileMonitor;
 
             MarkerGroups = new Dictionary<MarkerKind, MarkerGroupModel>();
@@ -128,7 +131,8 @@ namespace TarkovAssistant.App.Models
 
         private async Task LoadMap(int mapId)
         {
-            var map = await MapService.GetMapByIdAsync(mapId, AppService.Options.Profile);
+            //var map = await MapService.GetMapByIdAsync(mapId, AppService.Options.Profile);
+            var map = await WebApiService.GetMapByIdFromWebApiAsync(mapId, AppService.Options.Profile);
 
             CurrentLayer = null;
             Markers.Clear();
@@ -141,9 +145,9 @@ namespace TarkovAssistant.App.Models
             if (map != null)
             {
                 Map = new MapModel(map);
-                Map.SetLayers(map.Layers);
-                CurrentLayer = Map.MainLayer;
-                SetMarkers(map);
+                //Map.SetLayers(map.Layers);
+                //CurrentLayer = Map.MainLayer;
+                //SetMarkers(map);
             }
             else
             {

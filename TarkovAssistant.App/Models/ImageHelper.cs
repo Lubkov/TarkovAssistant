@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Windows.Media.Imaging;
-using Microsoft.IdentityModel.Tokens;
 
 namespace TarkovAssistant.App.Models
 {
@@ -19,7 +18,7 @@ namespace TarkovAssistant.App.Models
 
         public static BitmapImage? GetPicture(string filename)
         {
-            if (filename.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(filename))
             {
                 return null;
             }
