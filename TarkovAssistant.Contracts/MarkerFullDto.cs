@@ -2,7 +2,7 @@
 
 namespace TarkovAssistant.Contracts
 {
-    public class MarkerDto
+    public class MarkerFullDto
     {
         public int Id { get; set; }
 
@@ -16,13 +16,15 @@ namespace TarkovAssistant.Contracts
 
         public int? MapId { get; set; }
 
-        public int? QuestId { get; set; }
+        public QuestDto? Quest { get; set; }
 
         public bool IsFinished { get; set; }
 
         public bool IsSeleced { get; set; }
 
-        public MarkerDto()
+        public List<ResourceDto> Resources { get; set; } = [];
+
+        public MarkerFullDto()
         {
             Id = 0;
             Description = string.Empty;
@@ -30,22 +32,28 @@ namespace TarkovAssistant.Contracts
             Left = 0;
             Top = 0;
             MapId = 0;
-            QuestId = 0;
+            Quest = null;
             IsFinished = false;
             IsSeleced = false;
         }
 
-        public MarkerDto(MarkerEntity source)
-        { 
+        public MarkerFullDto(MarkerEntity source)
+        {
             Id = source.Id;
             Description = source.Description ?? string.Empty;
             Kind = source.Kind;
             Left = source.Left;
             Top = source.Top;
             MapId = source.MapId;
-            QuestId = source.QuestId;
+
+            if (source.Quest != null)
+            {
+                Quest = new QuestDto(source.Quest);
+            }
+
             IsFinished = source.MarkerStates.FirstOrDefault()?.IsFinished ?? false;
             IsSeleced = source.MarkerStates.FirstOrDefault()?.IsSeleced ?? false;
+            Resources = source.Resources.Select(r => new ResourceDto(r)).ToList();
         }
     }
 }

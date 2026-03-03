@@ -2,7 +2,7 @@
 using TarkovAssistant.Data;
 using TarkovAssistant.Domain;
 
-namespace TarkovAssistant.Services
+namespace TarkovAssistant.Server.Services
 {
     public class MarkerService : IMarkerService
     {
@@ -14,11 +14,11 @@ namespace TarkovAssistant.Services
         }
 
         public async Task<List<MarkerEntity>> GetMarkersAsync()
-        { 
+        {
             return await _dbContext.Markers.ToListAsync();
         }
 
-        public async Task<MarkerEntity?> GetMarkerById(int id, int? profileId)
+        public async Task<MarkerEntity?> GetMarkerByIdAsync(int id, int? profileId)
         {
             var query = _dbContext.Markers
                 .AsNoTracking()

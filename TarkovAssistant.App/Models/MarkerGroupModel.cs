@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
+using TarkovAssistant.Contracts;
 using TarkovAssistant.Domain;
 
 namespace TarkovAssistant.App.Models
@@ -68,7 +69,7 @@ namespace TarkovAssistant.App.Models
             Markers.Add(marker);
         }
 
-        public static MarkerGroupModel CreateFromQuest(QuestEntity quest)
+        public static MarkerGroupModel CreateFromQuest(QuestDto quest)
         {
             var group = new MarkerGroupModel(MarkerKind.Quest);
             group.Id = quest.Id;

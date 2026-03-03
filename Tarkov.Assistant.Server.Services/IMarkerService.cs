@@ -1,10 +1,10 @@
 ﻿using TarkovAssistant.Domain;
 
-namespace TarkovAssistant.Services
+namespace TarkovAssistant.Server.Services
 {
     public interface IMarkerService
     {
         Task<List<MarkerEntity>> GetMarkersAsync();
-        Task<MarkerEntity?> GetMarkerById(int id, int? profileId);
+        Task<MarkerEntity?> GetMarkerByIdAsync(int id, int? profileId);
     }
 }

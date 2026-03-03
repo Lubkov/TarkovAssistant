@@ -2,14 +2,14 @@
 using TarkovAssistant.Data;
 using TarkovAssistant.Domain;
 
-namespace TarkovAssistant.Services
+namespace TarkovAssistant.Server.Services
 {
     public class MarkerStateService : IMarkerStateService
     {
         private readonly ApplicationDbContext _context;
 
         public MarkerStateService(ApplicationDbContext context)
-        { 
+        {
             _context = context;
         }
         public async Task<List<MarkerStateEntity>> GetMarkerStatesAsync()
@@ -18,21 +18,21 @@ namespace TarkovAssistant.Services
         }
 
         public async Task<MarkerStateEntity?> GetByKeysAsync(int profileId, int markerId)
-        { 
+        {
             return await _context.MarkerStates
                 .Where(ms => ms.ProfileId == profileId && ms.MarkerId == markerId)
                 .FirstOrDefaultAsync();
         }
 
         public async Task AddAsync(MarkerStateEntity state)
-        { 
+        {
             await _context.AddAsync(state);
             await _context.SaveChangesAsync();
         }
 
         public async Task AddAsync(int profileId, int markerId, bool isSeleced, bool isFinished)
         {
-            await AddAsync(new MarkerStateEntity() 
+            await AddAsync(new MarkerStateEntity()
             {
                 ProfileId = profileId,
                 MarkerId = markerId,

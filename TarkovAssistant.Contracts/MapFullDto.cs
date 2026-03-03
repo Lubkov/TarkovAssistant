@@ -20,6 +20,12 @@ namespace TarkovAssistant.Contracts
 
         public List<MarkerDto> Markers { get; set; } = [];
 
+        public List<QuestDto> Quests { get; set; } = [];
+
+        public MapFullDto()
+        {
+        }
+
         public MapFullDto(MapEntity source) 
         { 
             Id = source.Id;
@@ -31,6 +37,12 @@ namespace TarkovAssistant.Contracts
 
             Layers = source.Layers.Select(l => new LayerDto(l)).ToList();
             Markers = source.Markers.Select(m => new MarkerDto(m)).ToList();
+            Quests = source.Markers
+                .Select(m => m.Quest!)
+                .Where(q => q is not null)
+                .Distinct()
+                .Select(q => new QuestDto(q))
+                .ToList();
         }
     }
 }

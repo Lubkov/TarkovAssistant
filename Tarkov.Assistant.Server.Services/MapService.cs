@@ -18,8 +18,9 @@ namespace TarkovAssistant.Server.Services
             var query = _dbContext.Maps
                 //.AsNoTracking()
                 .Include(map => map.Layers)
+                    .ThenInclude(layer => layer!.Resource)
                 .Include(map => map.Markers)
-                .ThenInclude(marker => marker!.Quest)
+                    .ThenInclude(marker => marker!.Quest)
                 .Where(map => map.Id == mapId);
 
             if (profileId != null)

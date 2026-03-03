@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using TarkovAssistant.App.Localization;
+using TarkovAssistant.Contracts;
 using TarkovAssistant.Domain;
 
 namespace TarkovAssistant.App.Models
@@ -28,20 +29,18 @@ namespace TarkovAssistant.App.Models
 
         public int? QuestId { get; set; }        
 
-        public MarkerModel(MarkerEntity marker) : base(marker.Top, marker.Left, 0)
-        { 
+        public MarkerModel(MarkerDto marker) : base(marker.Top, marker.Left, 0)
+        {
             Id = marker.Id;
             Description = marker.Description;
             Kind = marker.Kind;
             MapId = marker.MapId;
             QuestId = marker.QuestId;
-
-            var state = marker.MarkerStates.FirstOrDefault();
-            IsVisibile = state?.IsSeleced ?? false;
-            IsFinished = state?.IsFinished ?? false;
+            IsVisibile = marker.IsSeleced;
+            IsFinished = marker.IsFinished;
 
             Picture = GetMarkerIcon(marker.Kind, IsFinished);
-        }               
+        }
 
         public static string GetMarkerIcon(MarkerKind kind, bool IsFinished)
         {

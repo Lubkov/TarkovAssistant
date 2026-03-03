@@ -12,9 +12,13 @@ namespace TarkovAssistant.Contracts
 
         public int? MapId { get; set; }
         
-        public string Picture { get; set; }
+        public string Picture { get; set; } = string.Empty;
 
-        public bool IsMainLayer { get; set; }
+        public bool IsMainLayer { get; set; } = false;
+
+        public LayerDto()
+        {
+        }
 
         public LayerDto(LayerEntity source) 
         { 

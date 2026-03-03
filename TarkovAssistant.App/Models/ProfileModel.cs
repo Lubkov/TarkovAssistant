@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using TarkovAssistant.Contracts;
 using TarkovAssistant.Domain;
 
 namespace TarkovAssistant.App.Models
@@ -14,37 +15,15 @@ namespace TarkovAssistant.App.Models
         [ObservableProperty]
         private ProfileKind _kind;
 
-        public ProfileModel(ProfileEntity prifile)
+        public ProfileModel(ProfileDto prifile)
         {
             Id = prifile.Id;
             Name = prifile.Name;
             Kind = prifile.Kind;
         }
 
-        //public ProfileModel(Profile prifile)
-        //{
-        //    Id = prifile.Id;
-        //    Name = prifile.Name;
-        //    Kind = prifile.Kind;
-        //}
-
         public ProfileModel()
         { 
-
         }
-
-        //public static async Task<List<ProfileModel>> GetProfilesAsync()
-        //{
-        //    var filename = Path.Combine(AppContext.BaseDirectory, "profiles.json");
-        //    using var stream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-        //    return await JsonSerializer.DeserializeAsync<List<ProfileModel>>(stream) ?? [];
-        //}
-
-        //public static void SaveProfiles(Collection<ProfileModel> items)
-        //{
-        //    string json = JsonSerializer.Serialize(items, new JsonSerializerOptions { WriteIndented = true });
-        //    File.WriteAllText(_filename, json);
-        //}
     }
 }

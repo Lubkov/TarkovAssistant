@@ -2,7 +2,7 @@
 using TarkovAssistant.Data;
 using TarkovAssistant.Domain;
 
-namespace TarkovAssistant.Services
+namespace TarkovAssistant.Server.Services
 {
     public class LayerService : ILayerService
     {

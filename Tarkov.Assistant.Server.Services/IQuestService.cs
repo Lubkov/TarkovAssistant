@@ -1,6 +1,6 @@
 ﻿using TarkovAssistant.Domain;
 
-namespace TarkovAssistant.Services
+namespace TarkovAssistant.Server.Services
 {
     public interface IQuestService
     {

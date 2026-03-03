@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TarkovAssistant.Contracts;
+using TarkovAssistant.Domain;
 using TarkovAssistant.Server.Services;
 
 namespace TarkovAssistant.Server.Api.Controllers
@@ -18,11 +19,11 @@ namespace TarkovAssistant.Server.Api.Controllers
         }
 
         [HttpGet(Name = "GetMaps")]
-        [ProducesResponseType(typeof(IEnumerable<MapSummaryDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<MapDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetMaps()
         {
             var items = await _mapService.GetMapsAsync();
-            var results = items.Select(m => new MapSummaryDto(m));
+            var results = items.Select(m => new MapDto(m));
 
             return Ok(results);
         }
@@ -30,13 +31,26 @@ namespace TarkovAssistant.Server.Api.Controllers
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(MapFullDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetMapAsync([FromRoute]int id)
+        public async Task<IActionResult> GetMapAsync([FromRoute]int id, [FromQuery] int? profileId)
         {
-            var result = await _mapService.GetMapByIdAsync(id);
-            if (result == null)
+            var map = profileId is null
+                ? await _mapService.GetMapByIdAsync(id)
+                : await _mapService.GetMapByIdAsync(id, profileId);
+
+            if (map == null)
                 return NotFound();
 
-            return Ok(new MapFullDto(result));
+            return Ok(new MapFullDto(map));
+        }
+
+        [HttpGet("{id:int}/quests")]
+        [ProducesResponseType(typeof(IEnumerable<QuestDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetQuestsAsync([FromRoute] int id)
+        {
+            var items = await _mapService.GetQuestsForMapAsync(id);
+            var results = items.Select(quest => new QuestDto(quest));
+
+            return Ok(results);
         }
     }
 }

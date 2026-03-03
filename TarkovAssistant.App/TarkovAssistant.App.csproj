@@ -45,7 +45,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TarkovAssistant.Data\TarkovAssistant.Data.csproj" />
     <ProjectReference Include="..\TarkovAssistant.Domain\TarkovAssistant.Domain.csproj" />
     <ProjectReference Include="..\TarkovAssistant.Services\TarkovAssistant.Services.csproj" />
   </ItemGroup>
@@ -86,9 +85,6 @@
 
   <ItemGroup>
     <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="data.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

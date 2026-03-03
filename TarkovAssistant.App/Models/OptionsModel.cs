@@ -7,7 +7,7 @@ namespace TarkovAssistant.App.Models
     public partial class OptionsModel : ObservableObject
     {
         private readonly IAppService _appService;
-        private readonly IProfileService _profileService;
+        private readonly IWebApiService _webApiService;
 
         [ObservableProperty]
         private string _dataPath;
@@ -51,11 +51,11 @@ namespace TarkovAssistant.App.Models
 
         public event EventHandler? OptionsChanged;
 
-        public OptionsModel(IAppService appService, IProfileService profileService)
+        public OptionsModel(IAppService appService, IWebApiService webApiService)
         {
             _appService = appService;
-            _profileService = profileService;
-            _dataPath = appService.Options.DataPath;
+            _webApiService = webApiService;
+            _dataPath = ""; // appService.Options.DataPath;
             _sreenshotPath = appService.Options.SreenshotPath;
             _trackLocation = appService.Options.TrackLocation;
 
@@ -63,8 +63,8 @@ namespace TarkovAssistant.App.Models
         }
 
         public async Task LoadProfiles()
-        { 
-            var items = await _profileService.GetProfilesAsync();
+        {
+            var items = await _webApiService.GetProfilesAsync();
             foreach (var profile in items)
             {
                 Profiles.Add(new ProfileModel(profile));
@@ -75,7 +75,7 @@ namespace TarkovAssistant.App.Models
 
         public void AppllyTo(AppOptions options)
         {
-            options.DataPath = DataPath;
+            //options.DataPath = DataPath;
             options.SreenshotPath = SreenshotPath;
             options.TrackLocation = TrackLocation;
             options.Profile = CurrentProfile?.Id ?? null;

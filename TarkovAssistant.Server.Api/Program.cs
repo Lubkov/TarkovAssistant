@@ -15,6 +15,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IMapService, MapService>();
+builder.Services.AddTransient<ILayerService, LayerService>();
+builder.Services.AddTransient<IProfileService, ProfileService>();
+builder.Services.AddTransient<IMarkerService, MarkerService>();
+builder.Services.AddTransient<IMarkerStateService, MarkerStateService>();
 
 var app = builder.Build();
 

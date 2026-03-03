@@ -1,12 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.IO;
+using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System.Configuration;
-using System.IO;
-using System.Windows;
 using TarkovAssistant.App.ViewModels;
-using TarkovAssistant.Data;
 using TarkovAssistant.Services;
 
 namespace TarkovAssistant.App
@@ -28,26 +24,14 @@ namespace TarkovAssistant.App
                 .Build();
 
             var services = new ServiceCollection();
-            services.Configure<AppOptions>(config.GetSection("Settings"));
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(config.GetConnectionString("SQLiteConnection")));
-
-            //var services = new ServiceCollection();
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer(config.GetConnectionString("SqlServerConnection")));                                   
+            services.Configure<AppOptions>(config.GetSection("Settings"));                                
 
             services.AddSingleton<IAppService, AppService>();
-            services.AddTransient<IMapService, MapService>();
-            services.AddTransient<ILayerService, LayerService>();
-            services.AddTransient<IQuestService, QuestService>();
-            services.AddTransient<IMarkerService, MarkerService>();
             services.AddTransient<IFileMonitor, FileMonitor>();
-            services.AddTransient<IProfileService, ProfileService>();
-            services.AddTransient<IMarkerStateService, MarkerStateService>();
             services.AddTransient<IWebApiService, WebApiService>();
             services.AddTransient<MainWindowViewModel>();
 
-            ConfigureServices(services);
+            ConfigureServices(services, config);
             Services = services.BuildServiceProvider();
 
             var mainViewModel = Services.GetRequiredService<MainWindowViewModel>();
@@ -59,12 +43,14 @@ namespace TarkovAssistant.App
             await mainViewModel.InitializeAsync();
         }
 
-        private void ConfigureServices(IServiceCollection services)
+        private void ConfigureServices(IServiceCollection services, IConfiguration config)
         {
+            var appOptions = config.GetSection("Settings").Get<AppOptions>();
+
             // Typed HttpClient
             services.AddHttpClient<IWebApiService, WebApiService>(client =>
             {
-                client.BaseAddress = new Uri("https://localhost:7296/");
+                client.BaseAddress = new Uri(appOptions?.Server ?? "");
             });
 
             services.AddTransient<MainWindow>();

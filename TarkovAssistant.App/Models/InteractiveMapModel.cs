@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using TarkovAssistant.Contracts;
 using TarkovAssistant.Domain;
 using TarkovAssistant.Services;
 
@@ -9,9 +10,6 @@ namespace TarkovAssistant.App.Models
     public partial class InteractiveMapModel : ObservableObject
     {
         private IAppService AppService { get; set; }
-        private IMapService MapService { get; set; }
-        private IMarkerService MarkerService { get; set; }
-        private IMarkerStateService MarkerStateService { get; set; }
         private IWebApiService WebApiService { get; set; }
         private IFileMonitor FileMonitor { get; set; }
 
@@ -69,18 +67,9 @@ namespace TarkovAssistant.App.Models
 
         #endregion
 
-        public InteractiveMapModel(
-            IAppService appService,
-            IMapService mapService,
-            IMarkerService markerService,
-            IMarkerStateService markerStateService,
-            IWebApiService webApiService,
-            IFileMonitor fileMonitor)
+        public InteractiveMapModel(IAppService appService, IWebApiService webApiService, IFileMonitor fileMonitor)
         {
             AppService = appService;
-            MapService = mapService;
-            MarkerService = markerService;
-            MarkerStateService = markerStateService;
             WebApiService = webApiService;
             FileMonitor = fileMonitor;
 
@@ -119,7 +108,7 @@ namespace TarkovAssistant.App.Models
                 return true;
             }
 
-            var marker = await MarkerService.GetMarkerById(markerId, AppService.Options.Profile);
+            var marker = await WebApiService.GetMarkerByIdAsync(markerId, AppService.Options.Profile);
             if (marker == null)
             {
                 return false;
@@ -131,8 +120,7 @@ namespace TarkovAssistant.App.Models
 
         private async Task LoadMap(int mapId)
         {
-            //var map = await MapService.GetMapByIdAsync(mapId, AppService.Options.Profile);
-            var map = await WebApiService.GetMapByIdFromWebApiAsync(mapId, AppService.Options.Profile);
+            var map = await WebApiService.GetMapByIdAsync(mapId, AppService.Options.Profile);
 
             CurrentLayer = null;
             Markers.Clear();
@@ -145,9 +133,9 @@ namespace TarkovAssistant.App.Models
             if (map != null)
             {
                 Map = new MapModel(map);
-                //Map.SetLayers(map.Layers);
-                //CurrentLayer = Map.MainLayer;
-                //SetMarkers(map);
+                Map.SetLayers(map.Layers);
+                CurrentLayer = Map.MainLayer;
+                SetMarkers(map);
             }
             else
             {
@@ -155,11 +143,11 @@ namespace TarkovAssistant.App.Models
             }
         }
 
-        private void SetMarkers(MapEntity map)
+        private void SetMarkers(MapFullDto map)
         {
             Debug.WriteLine("Set markers");
 
-            HashSet<QuestEntity> quests = new HashSet<QuestEntity>();
+            List<MarkerDto> items = new List<MarkerDto>();
 
             foreach (var marker in map.Markers)
             {
@@ -172,22 +160,24 @@ namespace TarkovAssistant.App.Models
                 }
                 else
                 {
-                    quests.Add(marker.Quest!);
+                    items.Add(marker);
                 }
             }
 
-            foreach (var quest in quests.OrderBy(q => q.Name).ToList())
+            foreach (var quest in map.Quests.OrderBy(q => q.Name).ToList())
             {
-                SetQuestMarkers(map.Id, quest);
+                SetQuestMarkers(map.Id, quest, items);
             }
         }
 
-        private void SetQuestMarkers(int mapId, QuestEntity quest)
+        private void SetQuestMarkers(int mapId, QuestDto quest, List<MarkerDto> markers)
         {
             var group = MarkerGroupModel.CreateFromQuest(quest);
             var selected = false;
             var finished = true;
-            foreach (var marker in quest.Markers)
+
+            var items = markers.Where(m => m.QuestId == quest.Id).ToList();
+            foreach (var marker in items)
             {
                 if (marker.MapId != mapId)
                     continue;
@@ -203,7 +193,7 @@ namespace TarkovAssistant.App.Models
                     {
                         if (AppService.Options.Profile != null)
                         {
-                            await MarkerStateService.SaveAsync(
+                            await WebApiService.SaveMarkerStateAsync(
                                 AppService.Options.Profile.Value,
                                 marker.Id,
                                 marker.IsVisibile,
@@ -288,7 +278,6 @@ namespace TarkovAssistant.App.Models
 
             NormalizePosition(CurrentPosition);
         }
-
         private void OnFileCreated(object? sender, FileCreatedEventArgs e)
         {
             PositionModel? position = PositionModel.Parse(e.FileName);

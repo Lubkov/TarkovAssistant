@@ -7,7 +7,6 @@ namespace TarkovAssistant.Services
 {
     public class WebApiService : IWebApiService
     {
-        //private const string ApiUrl = "https://localhost:7296/";
         private const string ImagesUrl = "images/";
         private static readonly string CacheFolder = Path.Combine(Environment.CurrentDirectory, "images");
         private readonly HttpClient _client;
@@ -17,11 +16,11 @@ namespace TarkovAssistant.Services
             this._client = client;
         }
 
-        public async Task<List<MapSummaryDto>> GetMapsFromWebApiAsync()
+        public async Task<List<MapDto>> GetMapsAsync()
         {
             var maps = await _client
-                .GetFromJsonAsync<List<MapSummaryDto>>("Maps")
-                ?? new List<MapSummaryDto>();
+                .GetFromJsonAsync<List<MapDto>>("Maps")
+                ?? new List<MapDto>();
 
             await Parallel.ForEachAsync(maps, async (map, cancellationToken) =>
             {
@@ -34,28 +33,98 @@ namespace TarkovAssistant.Services
             return maps;
         }
 
-        public async Task<MapFullDto?> GetMapByIdFromWebApiAsync(int mapId, int? profileId)
+        public async Task<MapFullDto?> GetMapByIdAsync(int mapId, int? profileId)
         {
-            //var query = new Dictionary<string, string>
-            //{
-            //    { "id", mapId.ToString() }
-            //};
-
-            var url = QueryHelpers.AddQueryString("Maps", "id", mapId.ToString());
-            var map = await _client.GetFromJsonAsync<MapFullDto>(url);
-
-            if (map != null)
+            try
             {
-                await Parallel.ForEachAsync(map.Layers, async (layer, cancellationToken) =>
-                {
-                    // update file path
-                    layer.Picture = await LoadResourceAsync(
-                        layer.Picture,
-                        ResourceKind.Layer);
-                });
-            }
+                var url = $"Maps/{mapId}";
 
-            return map;
+                if (profileId.HasValue)
+                {
+                    var query = new Dictionary<string, string>
+                    {
+                        ["profileId"] = profileId.Value.ToString()
+                    };
+
+                    url = QueryHelpers.AddQueryString(url, query);
+                }
+
+                var map = await _client.GetFromJsonAsync<MapFullDto>(url);
+
+                if (map != null)
+                {
+                    await Parallel.ForEachAsync(map.Layers, async (layer, cancellationToken) =>
+                    {
+                        // update file path
+                        layer.Picture = await LoadResourceAsync(
+                            layer.Picture,
+                            ResourceKind.Layer);
+                    });
+                }
+
+                return map;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<MarkerFullDto?> GetMarkerByIdAsync(int id, int? profileId)
+        {
+            try
+            {
+                var url = $"Markers/{id}";
+
+                if (profileId.HasValue)
+                {
+                    var query = new Dictionary<string, string>
+                    {
+                        ["profileId"] = profileId.Value.ToString()
+                    };
+
+                    url = QueryHelpers.AddQueryString(url, query);
+                }
+
+                var marker = await _client.GetFromJsonAsync<MarkerFullDto>(url);
+
+                if (marker != null)
+                {
+                    await Parallel.ForEachAsync(marker.Resources, async (res, cancellationToken) =>
+                    {
+                        // update file path
+                        res.Picture = await LoadResourceAsync(res.Picture, res.Kind);
+                    });
+                }
+
+                return marker;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> SaveMarkerStateAsync(int profileId, int markerId, bool isSeleced, bool isFinished)
+        {
+            MarkerStateDto state = new MarkerStateDto
+            {
+                ProfileId = profileId,
+                MarkerId = markerId,
+                IsSeleced = isSeleced,
+                IsFinished = isFinished
+            };
+
+            HttpResponseMessage response = await _client.PostAsJsonAsync("/Markers/state", state);
+            
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<List<ProfileDto>> GetProfilesAsync()
+        {
+            return await _client
+                .GetFromJsonAsync<List<ProfileDto>>("Profiles")
+                ?? new List<ProfileDto>();
         }
 
         private async Task<string> LoadResourceAsync(string hash, ResourceKind kind)
@@ -77,12 +146,20 @@ namespace TarkovAssistant.Services
             var url = ImagesUrl;
             switch (kind)
             {
+                case ResourceKind.Screenshot:
+                    url = url + "marker/";
+                    break;
+                case ResourceKind.Quest:
+                    url = url + "item/";
+                    break;
                 case ResourceKind.Map:
                     url = url + "map/";
                     break;
                 case ResourceKind.Layer:
                     url = url + "layer/";
                     break;
+                default:
+                    return string.Empty;                    
             }
 
             if (!File.Exists(filepath))

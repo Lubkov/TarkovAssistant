@@ -2,7 +2,7 @@
 
 namespace TarkovAssistant.Contracts
 {
-    public class MapSummaryDto
+    public class MapDto
     {
         public int Id { get; set; }
 
@@ -10,11 +10,11 @@ namespace TarkovAssistant.Contracts
 
         public string Picture { get; set; } = string.Empty;
 
-        public MapSummaryDto()
+        public MapDto()
         {
         }
 
-        public MapSummaryDto(MapEntity source)
+        public MapDto(MapEntity source)
         {
             Id = source.Id;
             Name = source.Name;

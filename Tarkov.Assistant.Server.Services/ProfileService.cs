@@ -2,7 +2,7 @@
 using TarkovAssistant.Data;
 using TarkovAssistant.Domain;
 
-namespace TarkovAssistant.Services
+namespace TarkovAssistant.Server.Services
 {
     public class ProfileService : IProfileService
     {
@@ -14,8 +14,15 @@ namespace TarkovAssistant.Services
         }
 
         public async Task<List<ProfileEntity>> GetProfilesAsync()
-        { 
+        {
             return await _context.Profiles.ToListAsync();
+        }
+
+        public async Task<ProfileEntity?> GetProfileByIdAsync(int id)
+        { 
+            return await _context.Profiles
+                .Where(p => p.Id == id)
+                .FirstOrDefaultAsync();
         }
 
         public async Task AddProfileAsync(ProfileEntity profile)
@@ -34,7 +41,7 @@ namespace TarkovAssistant.Services
         }
 
         public async Task DeleteProfileAsync(int id)
-        { 
+        {
             await _context.Profiles
                 .Where(p => p.Id == id)
                 .ExecuteDeleteAsync();

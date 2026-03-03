@@ -14,10 +14,6 @@ namespace TarkovAssistant.App.ViewModels
     public partial class MainWindowViewModel : ObservableObject, IDisposable
     {
         private IAppService _appService;
-        private readonly IMapService _mapService;
-        private readonly IMarkerService _markerService;
-        private readonly IProfileService _profileService;
-        private readonly IMarkerStateService _markerStateService;
         private readonly IWebApiService _webApiService;
         private readonly IFileMonitor _fileMonitor;
 
@@ -65,26 +61,15 @@ namespace TarkovAssistant.App.ViewModels
 
         #endregion
 
-        public MainWindowViewModel(
-            IAppService appService, 
-            IMapService mapService, 
-            IMarkerService markerService, 
-            IProfileService profileService,
-            IMarkerStateService markerStateService,
-            IWebApiService webApiService,
-            IFileMonitor fileMonitor)
+        public MainWindowViewModel(IAppService appService, IWebApiService webApiService, IFileMonitor fileMonitor)
         {
             _appService = appService;
-            _mapService = mapService;
-            _markerService = markerService;
-            _profileService = profileService;
-            _markerStateService = markerStateService;
             _webApiService = webApiService;
             _fileMonitor = fileMonitor;
             _formInfo = new FormModel();
             _storedForm = new FormWrapper(_formInfo);
-            _interactiveMap = new InteractiveMapModel(appService, mapService, markerService, markerStateService, webApiService, fileMonitor);
-            _options = new OptionsModel(appService, profileService);
+            _interactiveMap = new InteractiveMapModel(appService, webApiService, fileMonitor);
+            _options = new OptionsModel(appService, webApiService);
             _options.OptionsChanged += OnOptionsChanged;
 #if DEBUG
             _isTestMode = true;
@@ -92,7 +77,7 @@ namespace TarkovAssistant.App.ViewModels
             _isTestMode = false;
 #endif
 
-            MarkerResourceModel.DataPath = appService.Options.DataPath;
+            MarkerResourceModel.DataPath = ""; // appService.Options.DataPath;
         }
 
         public async Task InitializeAsync()
@@ -206,106 +191,106 @@ namespace TarkovAssistant.App.ViewModels
         [RelayCommand]
         private async Task AddProfile()
         {
-            var profile = new ProfileEntity();
-            profile.Name = "New Profile";
-            profile.Kind = ProfileKind.Bear;
+            //var profile = new ProfileEntity();
+            //profile.Name = "New Profile";
+            //profile.Kind = ProfileKind.Bear;
 
-            var dialog = new ProfileWindow
-            {
-                DataContext = new ProfileWindowViewModel(profile)
-            };
-            dialog.Owner = Application.Current.MainWindow;
-            WeakReferenceMessenger.Default.Register<CloseDialogMessage>(dialog, (r, m) =>
-            {
-                dialog.DialogResult = m.Result;
-            });
-            try
-            {
-                if (dialog.ShowDialog() ?? false)
-                {
-                    await _profileService.AddProfileAsync(profile);
-                    var item = new ProfileModel(profile);
-                    Options.Profiles.Add(item);
-                    Options.CurrentProfile = item;
+            //var dialog = new ProfileWindow
+            //{
+            //    DataContext = new ProfileWindowViewModel(profile)
+            //};
+            //dialog.Owner = Application.Current.MainWindow;
+            //WeakReferenceMessenger.Default.Register<CloseDialogMessage>(dialog, (r, m) =>
+            //{
+            //    dialog.DialogResult = m.Result;
+            //});
+            //try
+            //{
+            //    if (dialog.ShowDialog() ?? false)
+            //    {
+            //        await _profileService.AddProfileAsync(profile);
+            //        var item = new ProfileModel(profile);
+            //        Options.Profiles.Add(item);
+            //        Options.CurrentProfile = item;
 
-                    _appService.Options.Profile = item.Id;
-                    await _appService.SaveOptionsAsync();
-                }
-            }
-            finally
-            {
-                WeakReferenceMessenger.Default.UnregisterAll(dialog);
-            }
+            //        _appService.Options.Profile = item.Id;
+            //        await _appService.SaveOptionsAsync();
+            //    }
+            //}
+            //finally
+            //{
+            //    WeakReferenceMessenger.Default.UnregisterAll(dialog);
+            //}
         }
 
         [RelayCommand]
         private async Task EditProfile(ProfileModel profile)
         {
-            if (profile == null)
-                return;
+            //if (profile == null)
+            //    return;
 
-            var newProfile = new ProfileEntity();
-            newProfile.Id = profile.Id;
-            newProfile.Name = profile.Name;
-            newProfile.Kind = profile.Kind;
+            //var newProfile = new ProfileEntity();
+            //newProfile.Id = profile.Id;
+            //newProfile.Name = profile.Name;
+            //newProfile.Kind = profile.Kind;
 
-            var dialog = new ProfileWindow
-            {
-                DataContext = new ProfileWindowViewModel(newProfile)
-            };
-            dialog.Owner = Application.Current.MainWindow;
-            WeakReferenceMessenger.Default.Register<CloseDialogMessage>(dialog, (r, m) =>
-            {
-                dialog.DialogResult = m.Result;
-            });
-            try
-            {
-                if (dialog.ShowDialog() ?? false)
-                {
-                    await _profileService.UpdateProfileAsync(newProfile);
+            //var dialog = new ProfileWindow
+            //{
+            //    DataContext = new ProfileWindowViewModel(newProfile)
+            //};
+            //dialog.Owner = Application.Current.MainWindow;
+            //WeakReferenceMessenger.Default.Register<CloseDialogMessage>(dialog, (r, m) =>
+            //{
+            //    dialog.DialogResult = m.Result;
+            //});
+            //try
+            //{
+            //    if (dialog.ShowDialog() ?? false)
+            //    {
+            //        await _profileService.UpdateProfileAsync(newProfile);
 
-                    profile.Name = newProfile.Name;
-                    profile.Kind = newProfile.Kind;
-                }
-            }
-            finally
-            {
-                WeakReferenceMessenger.Default.UnregisterAll(dialog);
-            }
+            //        profile.Name = newProfile.Name;
+            //        profile.Kind = newProfile.Kind;
+            //    }
+            //}
+            //finally
+            //{
+            //    WeakReferenceMessenger.Default.UnregisterAll(dialog);
+            //}
         }
 
         [RelayCommand]
         private async Task RemoveProfile(ProfileModel profile)
         {
-            if (profile == null)
-                return;
+            //if (profile == null)
+            //    return;
 
-            var dialog = new MessageWindow
-            {
-                DataContext = new MessageWindowViewModel("Delete", $"Delete profile \"{profile.Name}\"?")
-            };
-            dialog.Owner = Application.Current.MainWindow;
-            dialog.ShowInTaskbar = false;
-            WeakReferenceMessenger.Default.Register<CloseDialogMessage>(dialog, (r, m) =>
-            {
-                dialog.DialogResult = m.Result;
-            });
-            try
-            {
-                if (dialog.ShowDialog() ?? false)
-                {
-                    await _profileService.DeleteProfileAsync(profile.Id);
-                    _appService.Options.Profile = null;
-                    await _appService.SaveOptionsAsync();
+            //var dialog = new MessageWindow
+            //{
+            //    DataContext = new MessageWindowViewModel("Delete", $"Delete profile \"{profile.Name}\"?")
+            //};
+            //dialog.Owner = Application.Current.MainWindow;
+            //dialog.ShowInTaskbar = false;
+            //WeakReferenceMessenger.Default.Register<CloseDialogMessage>(dialog, (r, m) =>
+            //{
+            //    dialog.DialogResult = m.Result;
+            //});
+            //try
+            //{
+            //    if (dialog.ShowDialog() ?? false)
+            //    {
+            //        await _profileService.DeleteProfileAsync(profile.Id);
+            //        _appService.Options.Profile = null;
+            //        await _appService.SaveOptionsAsync();
                     
-                    Options.Profiles.Remove(profile);
-                    Options.CurrentProfile = null;
-                }
-            }
-            finally
-            {
-                WeakReferenceMessenger.Default.UnregisterAll(dialog);
-            }
+            //        Options.Profiles.Remove(profile);
+            //        Options.CurrentProfile = null;
+            //    }
+            //}
+            //finally
+            //{
+            //    WeakReferenceMessenger.Default.UnregisterAll(dialog);
+            //}
         }
 
         [RelayCommand]
@@ -369,13 +354,7 @@ namespace TarkovAssistant.App.ViewModels
 
         private async Task LoadMaps()
         {
-            //var maps = await _mapService.GetMapsAsync();
-
-            //Maps.Clear();
-            //foreach (var entity in maps)
-            //    Maps.Add(new MapModel(entity));
-
-            var maps = await _webApiService.GetMapsFromWebApiAsync();
+            var maps = await _webApiService.GetMapsAsync();
 
             Maps.Clear();
             foreach (var entity in maps)

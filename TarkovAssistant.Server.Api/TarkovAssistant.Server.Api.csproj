@@ -15,6 +15,13 @@
     <ProjectReference Include="..\Tarkov.Assistant.Server.Services\Tarkov.Assistant.Server.Services.csproj" />
     <ProjectReference Include="..\TarkovAssistant.Contracts\TarkovAssistant.Contracts.csproj" />
     <ProjectReference Include="..\TarkovAssistant.Data\TarkovAssistant.Data.csproj" />
+    <ProjectReference Include="..\TarkovAssistant.Services\TarkovAssistant.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="data.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
-﻿using System.Windows;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows;
+using TarkovAssistant.Contracts;
 using TarkovAssistant.Domain;
 
 namespace TarkovAssistant.App.Models
@@ -49,20 +50,17 @@ namespace TarkovAssistant.App.Models
 
         public event Action<bool>? FinishedChanged;
 
-        public MarkerPanelModel(MarkerEntity marker)
-        { 
-            if (marker == null)
-                throw new ArgumentNullException(nameof(marker));
+        public MarkerPanelModel(MarkerFullDto marker)
+        {
+            ArgumentNullException.ThrowIfNull(marker);
 
             Id = marker.Id;
             Description = marker.Quest?.Name ?? string.Empty;
             Kind = marker.Kind;
             MapId = marker.MapId;
-            QuestId = marker.QuestId;
+            QuestId = marker.Quest?.Id;
             TraderPicture = GetTraderPicture(marker?.Quest?.Trader ?? TraderKind.None);
-            
-            var state = marker?.MarkerStates.FirstOrDefault();            
-            IsFinished = state?.IsFinished ?? false;
+            IsFinished = marker.IsFinished;
 
             foreach (var item in marker!.Resources)
             {
@@ -82,8 +80,8 @@ namespace TarkovAssistant.App.Models
             foreach (var bmp in Items)
             {
                 heigh += bmp.Picture?.PixelHeight ?? 0;
-                width += bmp.Picture?.PixelWidth ?? 0;                
-            }                       
+                width += bmp.Picture?.PixelWidth ?? 0;
+            }
 
             CurrentScreenshot = Screenshots.FirstOrDefault();
             IsScreenshotListVisible = (Screenshots.Count > 1) ? Visibility.Visible : Visibility.Collapsed;
