@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using TarkovAssistant.Data.Configurations;
 using TarkovAssistant.Domain;
 
 namespace TarkovAssistant.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<UserEntity>
     {
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
         public DbSet<MapEntity> Maps { get; set; } = null!;
         public DbSet<LayerEntity> Layers { get; set; } = null!;
         public DbSet<MarkerEntity> Markers { get; set; } = null!;
